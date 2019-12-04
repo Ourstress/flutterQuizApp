@@ -16,24 +16,43 @@ class QuizPageState extends State<QuizPage> {
 
   void _updateQuizScore({String question, int value}) {
     setState(() {
-      _quizScore[question] = value;
+      if (!_quizScore.containsKey(question)) {
+        _quizScore[question] = {};
+        _quizScore['type'] = getTypeFromQn(question);
+      }
+      _quizScore[question]['value'] = value;
     });
+  }
+
+  List<Map<dynamic, dynamic>> getQuizQuestions() =>
+      widget.quizInfo['questions'];
+
+  String getTypeFromQn(question) {
+    String interimValue = '';
+    for (Map quizQn in getQuizQuestions()) {
+      if (quizQn['title'] == question) {
+        interimValue = quizQn['type'];
+      }
+    }
+    return interimValue;
   }
 
   Widget quizQnContainer() {
     return Flexible(
         child: ListView.builder(
             padding: EdgeInsets.all(16.0),
-            itemCount: widget.quizInfo['questions'].length,
+            itemCount: getQuizQuestions().length,
             itemBuilder: (BuildContext context, int index) {
               final quizDetails = {
-                'title': widget.quizInfo['questions'][index],
+                'title': getQuizQuestions()[index]['title'],
                 'index': index
               };
               return QuizQn(
                   quizDetails: quizDetails,
                   updateQuizScore: _updateQuizScore,
-                  quizScore: _quizScore[quizDetails['title']]);
+                  quizScore: _quizScore.containsKey(quizDetails['title'])
+                      ? _quizScore[quizDetails['title']]['value']
+                      : 0);
             }));
   }
 

@@ -31,6 +31,6 @@ class QuizCardContainer extends StatelessWidget {
             onTap: () {
               _openQuiz(quizInfo);
             },
-            child: ListTile(title: Text(quizInfo['quizTitle']))));
+            child: ListTile(title: Text(quizInfo['title']))));
   }
 }
