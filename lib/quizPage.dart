@@ -26,11 +26,14 @@ class QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(16.0),
             itemCount: widget.quizInfo['questions'].length,
             itemBuilder: (BuildContext context, int index) {
-              final quizDetails = widget.quizInfo['questions'][index];
+              final quizDetails = {
+                'title': widget.quizInfo['questions'][index],
+                'index': index
+              };
               return QuizQn(
                   quizDetails: quizDetails,
                   updateQuizScore: _updateQuizScore,
-                  quizScore: _quizScore[quizDetails]);
+                  quizScore: _quizScore[quizDetails['title']]);
             }));
   }
 

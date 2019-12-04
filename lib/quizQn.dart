@@ -5,7 +5,7 @@ class QuizQn extends StatelessWidget {
   const QuizQn(
       {Key key, this.quizDetails, this.updateQuizScore, this.quizScore})
       : super(key: key);
-  final String quizDetails;
+  final Map quizDetails;
   final Function updateQuizScore;
   final int quizScore;
 
@@ -18,7 +18,7 @@ class QuizQn extends StatelessWidget {
           value: index,
           groupValue: quizScore,
           onChanged: (value) {
-            updateQuizScore(question: quizDetails, value: value);
+            updateQuizScore(question: quizDetails['title'], value: value);
           },
         )
       ],
@@ -46,7 +46,9 @@ class QuizQn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         child: ListTile(
-            title: Text(quizDetails),
+            title: Text((quizDetails['index'] + 1).toString() +
+                '.  ' +
+                quizDetails['title']),
             contentPadding: EdgeInsets.all(20.0),
             subtitle: setOfRadioBtnWidget()));
   }
