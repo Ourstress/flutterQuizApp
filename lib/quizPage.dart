@@ -18,7 +18,7 @@ class QuizPageState extends State<QuizPage> {
     setState(() {
       if (!_quizScore.containsKey(question)) {
         _quizScore[question] = {};
-        _quizScore['type'] = getTypeFromQn(question);
+        _quizScore[question]['type'] = getTypeFromQn(question);
       }
       _quizScore[question]['value'] = value;
     });
