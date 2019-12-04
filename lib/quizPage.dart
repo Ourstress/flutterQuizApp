@@ -27,9 +27,20 @@ class QuizPageState extends State<QuizPage> {
             itemCount: widget.quizInfo['questions'].length,
             itemBuilder: (BuildContext context, int index) {
               final quizDetails = widget.quizInfo['questions'][index];
-              return quizQn(
-                  quizDetails, _updateQuizScore, _quizScore[quizDetails]);
+              return QuizQn(
+                  quizDetails: quizDetails,
+                  updateQuizScore: _updateQuizScore,
+                  quizScore: _quizScore[quizDetails]);
             }));
+  }
+
+  Widget submitButton() {
+    return RaisedButton(
+      onPressed: () {
+        showAlertDialog(context, _quizScore.toString());
+      },
+      child: Text('Submit', style: TextStyle(fontSize: 20)),
+    );
   }
 
   @override
@@ -39,14 +50,6 @@ class QuizPageState extends State<QuizPage> {
         body: Center(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-              quizQnContainer(),
-              RaisedButton(
-                onPressed: () {
-                  showAlertDialog(context, _quizScore.toString());
-                },
-                child: Text('Submit', style: TextStyle(fontSize: 20)),
-              )
-            ])));
+                children: <Widget>[quizQnContainer(), submitButton()])));
   }
 }

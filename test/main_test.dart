@@ -7,6 +7,6 @@ void main() {
     await tester.pumpWidget(MyApp());
 
     // Verify that welcome message is on screen.
-    expect(find.text('Welcome to the quizzes app!'), findsOneWidget);
+    expect(find.text('Welcome to the quiz app!'), findsOneWidget);
   });
 }

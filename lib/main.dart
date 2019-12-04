@@ -21,6 +21,16 @@ class MyHomePage extends StatelessWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
 
+  Widget siteLandingView(BuildContext context) {
+    return Flexible(
+        child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              'Welcome to the quiz app!',
+              style: Theme.of(context).textTheme.display1,
+            )));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,16 +38,7 @@ class MyHomePage extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Flexible(
-                child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Welcome to the quizzes app!',
-                      style: Theme.of(context).textTheme.display1,
-                    ))),
-            QuizCardContainer()
-          ],
+          children: <Widget>[siteLandingView(context), QuizCardContainer()],
         ),
       ),
     );
