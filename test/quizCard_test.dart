@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quiz/quiz_card.dart';
+import 'package:quiz/quizCard.dart';
 
 void main() {
   testWidgets('Quiz card looks as expected', (WidgetTester tester) async {
