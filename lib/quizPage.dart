@@ -38,22 +38,28 @@ class QuizPageState extends State<QuizPage> {
   }
 
   Widget quizQnContainer() {
-    return Flexible(
-        child: ListView.builder(
-            padding: EdgeInsets.all(16.0),
-            itemCount: getQuizQuestions().length,
-            itemBuilder: (BuildContext context, int index) {
-              final quizDetails = {
-                'title': getQuizQuestions()[index]['title'],
-                'index': index
-              };
-              return QuizQn(
-                  quizDetails: quizDetails,
-                  updateQuizScore: _updateQuizScore,
-                  quizScore: _quizScore.containsKey(quizDetails['title'])
-                      ? _quizScore[quizDetails['title']]['value']
-                      : 0);
-            }));
+    return ListView.builder(
+        padding: EdgeInsets.all(16.0),
+        itemCount: getQuizQuestions().length,
+        itemBuilder: (BuildContext context, int index) {
+          final quizDetails = {
+            'title': getQuizQuestions()[index]['title'],
+            'index': index
+          };
+          Widget quizQuestion = QuizQn(
+              quizDetails: quizDetails,
+              updateQuizScore: _updateQuizScore,
+              quizScore: _quizScore.containsKey(quizDetails['title'])
+                  ? _quizScore[quizDetails['title']]['value']
+                  : 0);
+          if (index == getQuizQuestions().length - 1) {
+            return Column(
+              children: <Widget>[quizQuestion, submitButton()],
+            );
+          } else {
+            return quizQuestion;
+          }
+        });
   }
 
   Widget submitButton() {
@@ -67,11 +73,6 @@ class QuizPageState extends State<QuizPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: myAppBar(),
-        body: Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[quizQnContainer(), submitButton()])));
+    return Scaffold(appBar: myAppBar(), body: quizQnContainer());
   }
 }
