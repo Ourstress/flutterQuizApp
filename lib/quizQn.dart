@@ -10,10 +10,14 @@ class QuizQn extends StatelessWidget {
   final int quizScore;
 
   Widget radioButtonWidget(int index, String header) {
-    return Flexible(
-        child: Column(
+    return Column(
       children: <Widget>[
-        Text(header),
+        Container(
+            constraints: BoxConstraints(minWidth: 70.0),
+            child: Text(
+              header,
+              textAlign: TextAlign.center,
+            )),
         Radio(
           value: index,
           groupValue: quizScore,
@@ -22,7 +26,7 @@ class QuizQn extends StatelessWidget {
           },
         )
       ],
-    ));
+    );
   }
 
   List<Widget> _makeRadioButtons(List<Map> scaleHeaders) {
@@ -37,8 +41,9 @@ class QuizQn extends StatelessWidget {
     return Container(
         child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.end,
+                alignment: WrapAlignment.spaceEvenly,
                 children: _makeRadioButtons(config['scaleHeaders']))));
   }
 
