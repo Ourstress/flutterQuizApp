@@ -12,7 +12,7 @@ class QuizQn extends StatefulWidget {
 }
 
 class QuizQnState extends State<QuizQn> {
-  Map _radioScores = {};
+  int radioGroupScore = -1;
   Map qnDetails() => widget.quizDetails;
   String qnTitle() => widget.quizDetails['title'];
 
@@ -27,9 +27,11 @@ class QuizQnState extends State<QuizQn> {
             )),
         Radio(
           value: index,
-          groupValue: _radioScores[qnTitle()],
+          groupValue: radioGroupScore,
           onChanged: (value) {
-            _radioScores[qnTitle()] = value;
+            setState(() {
+              radioGroupScore = value;
+            });
             widget.updateQuizScore(question: qnTitle(), value: value);
           },
         )
