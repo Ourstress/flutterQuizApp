@@ -38,6 +38,8 @@ class QuizPageState extends State<QuizPage> {
     return interimValue;
   }
 
+  String getQuizTitle() => widget.quizInfo['quizTitle'];
+
   Widget quizQnContainer() {
     return ListView.builder(
         padding: EdgeInsets.all(16.0),
@@ -78,6 +80,6 @@ class QuizPageState extends State<QuizPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: myAppBar(), body: quizQnContainer());
+    return Scaffold(appBar: myAppBar(getQuizTitle()), body: quizQnContainer());
   }
 }

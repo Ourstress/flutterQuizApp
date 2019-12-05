@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
 
-Widget myAppBar() => AppBar(
-    title: Text("Quiz App"),
-  );
+Widget myAppBar([String title = 'Quiz App']) => AppBar(
+      title: Text(title),
+    );
