@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'appBar.dart';
 import 'quizQn.dart';
+import 'resultCalc.dart';
 import 'showAlertDialog.dart';
 
 class QuizPage extends StatefulWidget {
@@ -65,7 +66,11 @@ class QuizPageState extends State<QuizPage> {
   Widget submitButton() {
     return RaisedButton(
       onPressed: () {
-        showAlertDialog(context, _quizScore.toString());
+        String results = 'Your result is ' +
+            calculateResults(_quizScore)['outcome'] +
+            ' and your scores are ' +
+            calculateResults(_quizScore)['scores'].toString();
+        showAlertDialog(context, results);
       },
       child: Text('Submit', style: TextStyle(fontSize: 20)),
     );
