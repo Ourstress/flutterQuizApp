@@ -50,11 +50,7 @@ class QuizPageState extends State<QuizPage> {
             'index': index
           };
           Widget quizQuestion = QuizQn(
-              quizDetails: quizDetails,
-              updateQuizScore: _updateQuizScore,
-              quizScore: _quizScore.containsKey(quizDetails['title'])
-                  ? _quizScore[quizDetails['title']]['value']
-                  : 0);
+              quizDetails: quizDetails, updateQuizScore: _updateQuizScore);
           if (index == getQuizQuestions().length - 1) {
             return Column(
               children: <Widget>[quizQuestion, submitButton()],

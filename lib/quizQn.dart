@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'config.dart';
 
-class QuizQn extends StatelessWidget {
-  const QuizQn(
-      {Key key, this.quizDetails, this.updateQuizScore, this.quizScore})
+class QuizQn extends StatefulWidget {
+  const QuizQn({Key key, this.quizDetails, this.updateQuizScore})
       : super(key: key);
   final Map quizDetails;
   final Function updateQuizScore;
-  final int quizScore;
+
+  @override
+  QuizQnState createState() => QuizQnState();
+}
+
+class QuizQnState extends State<QuizQn> {
+  Map _radioScores = {};
+  Map qnDetails() => widget.quizDetails;
+  String qnTitle() => widget.quizDetails['title'];
 
   Widget radioButtonWidget(int index, String header) {
     return Column(
@@ -20,9 +27,10 @@ class QuizQn extends StatelessWidget {
             )),
         Radio(
           value: index,
-          groupValue: quizScore,
+          groupValue: _radioScores[qnTitle()],
           onChanged: (value) {
-            updateQuizScore(question: quizDetails['title'], value: value);
+            _radioScores[qnTitle()] = value;
+            widget.updateQuizScore(question: qnTitle(), value: value);
           },
         )
       ],
@@ -51,9 +59,8 @@ class QuizQn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         child: ListTile(
-            title: Text((quizDetails['index'] + 1).toString() +
-                '.  ' +
-                quizDetails['title']),
+            title:
+                Text((qnDetails()['index'] + 1).toString() + '.  ' + qnTitle()),
             contentPadding: EdgeInsets.all(20.0),
             subtitle: setOfRadioBtnWidget()));
   }
