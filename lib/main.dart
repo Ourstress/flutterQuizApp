@@ -22,35 +22,37 @@ class MyHomePage extends StatelessWidget {
   final String title;
 
   Widget siteLandingView(BuildContext context) {
-    return Flexible(
-        child: Stack(
+    return Stack(
       children: <Widget>[
         Positioned.fill(
           child: Image.network('https://source.unsplash.com/random',
               fit: BoxFit.fill),
         ),
-        Align(
-            alignment: Alignment.center,
-            child: Text(
-              'Welcome to the quiz app!',
-              style: Theme.of(context)
-                  .textTheme
-                  .display1
-                  .merge(TextStyle(backgroundColor: Colors.white70)),
-              textAlign: TextAlign.center,
-            ))
+        Column(
+          children: <Widget>[
+            Flexible(
+                child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Welcome to the quiz app!',
+                      style: Theme.of(context)
+                          .textTheme
+                          .display1
+                          .merge(TextStyle(backgroundColor: Colors.white70)),
+                      textAlign: TextAlign.center,
+                    ))),
+            QuizCardContainer()
+          ],
+        )
       ],
-    ));
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: myAppBar(),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[siteLandingView(context), QuizCardContainer()],
-      ),
+      body: siteLandingView(context),
     );
   }
 }
