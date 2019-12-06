@@ -14,6 +14,7 @@ class QuizQnState extends State<QuizQn> {
   int radioGroupScore = -1;
   Map qnDetails() => widget.quizDetails;
   String qnTitle() => widget.quizDetails['title'];
+  String qnType() => widget.quizDetails['type'];
 
   Widget radioButtonWidget(int index, String header) {
     return Column(
@@ -31,7 +32,8 @@ class QuizQnState extends State<QuizQn> {
             setState(() {
               radioGroupScore = value;
             });
-            // widget.updateQuizScore(question: qnTitle(), value: value);
+            widget.updateQuizScore(
+                question: qnTitle(), questionType: qnType(), value: value);
           },
         )
       ],
