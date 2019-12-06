@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:quiz/quizCard.dart';
 import 'appBar.dart';
+import 'package:firebase/firebase.dart' as fb;
+import 'package:firebase/firestore.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  if (fb.apps.length == 0) {
+    fb.initializeApp(
+        // fill in your own firebase config
+        );
+  }
+  return runApp(MyApp());
+}
+
+class Fs with ChangeNotifier {
+  Firestore store = fb.firestore();
+  Firestore get getStore => store;
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -51,8 +66,10 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: myAppBar(),
-      body: siteLandingView(context),
-    );
+        appBar: myAppBar(),
+        body: ChangeNotifierProvider(
+          create: (BuildContext context) => Fs(),
+          child: siteLandingView(context),
+        ));
   }
 }
