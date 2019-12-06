@@ -39,6 +39,7 @@ class QuizPage extends StatelessWidget {
 
   Widget quizQnContainer(context) {
     return ListView.builder(
+        physics: AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.all(16.0),
         itemCount: getQuizQuestions().length,
         itemBuilder: (BuildContext context, int index) {

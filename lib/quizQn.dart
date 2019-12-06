@@ -60,6 +60,7 @@ class QuizQnState extends State<QuizQn> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Card(
         child: ListTile(
             title:
