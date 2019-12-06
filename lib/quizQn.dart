@@ -10,7 +10,7 @@ class QuizQn extends StatefulWidget {
   QuizQnState createState() => QuizQnState();
 }
 
-class QuizQnState extends State<QuizQn> {
+class QuizQnState extends State<QuizQn> with AutomaticKeepAliveClientMixin {
   int radioGroupScore = -1;
   Map qnDetails() => widget.quizDetails;
   String qnTitle() => widget.quizDetails['title'];
@@ -67,4 +67,7 @@ class QuizQnState extends State<QuizQn> {
             contentPadding: EdgeInsets.all(20.0),
             subtitle: setOfRadioBtnWidget()));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
