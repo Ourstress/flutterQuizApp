@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'config.dart';
 
 class QuizQn extends StatefulWidget {
-  const QuizQn({Key key, this.quizDetails, this.updateQuizScore})
-      : super(key: key);
+  QuizQn({Key key, this.quizDetails, this.updateQuizScore}) : super(key: key);
   final Map quizDetails;
   final Function updateQuizScore;
 
@@ -32,7 +31,7 @@ class QuizQnState extends State<QuizQn> {
             setState(() {
               radioGroupScore = value;
             });
-            widget.updateQuizScore(question: qnTitle(), value: value);
+            // widget.updateQuizScore(question: qnTitle(), value: value);
           },
         )
       ],
