@@ -13,6 +13,7 @@ firebase.json
 .buildlog/
 .history
 .svn/
+lib/secrets.dart
 
 # IntelliJ related
 *.iml

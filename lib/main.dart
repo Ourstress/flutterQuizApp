@@ -4,12 +4,16 @@ import 'package:quiz/quizCard.dart';
 import 'appBar.dart';
 import 'package:firebase/firebase.dart' as fb;
 import 'package:firebase/firestore.dart';
+import 'secrets.dart';
 
 void main() {
   if (fb.apps.length == 0) {
     fb.initializeApp(
-        // fill in your own firebase config
-        );
+        apiKey: secrets['apiKey'],
+        authDomain: secrets['authDomain'],
+        databaseURL: secrets['databaseURL'],
+        projectId: secrets['projectId'],
+        storageBucket: secrets['storageBucket']);
   }
   return runApp(MyApp());
 }
@@ -17,6 +21,19 @@ void main() {
 class Fs with ChangeNotifier {
   Firestore store = fb.firestore();
   Firestore get getStore => store;
+}
+
+class Fa with ChangeNotifier {
+  fb.Auth fbAuth = fb.auth();
+  fb.User user;
+
+  Fa() {
+    fbAuth.onAuthStateChanged.listen((e) {
+      user = e;
+    });
+  }
+
+  fb.User get getUser => user;
 }
 
 class MyApp extends StatelessWidget {
@@ -67,8 +84,11 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: myAppBar(),
-        body: ChangeNotifierProvider(
-          create: (BuildContext context) => Fs(),
+        body: MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (context) => Fs()),
+            ChangeNotifierProvider(create: (context) => Fa()),
+          ],
           child: siteLandingView(context),
         ));
   }
