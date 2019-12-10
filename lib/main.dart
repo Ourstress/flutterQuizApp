@@ -30,6 +30,7 @@ class Fa with ChangeNotifier {
   Fa() {
     fbAuth.onAuthStateChanged.listen((e) {
       user = e;
+      notifyListeners();
     });
   }
 

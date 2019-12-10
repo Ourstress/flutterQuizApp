@@ -22,23 +22,33 @@ class QuizCardContainer extends StatelessWidget {
                   itemCount: querySnapshot.data.docs.length,
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                       maxCrossAxisExtent: config['cardMaxWidth'],
-                      childAspectRatio: 1.5),
+                      childAspectRatio: 1.2),
                   itemBuilder: (BuildContext context, int index) {
                     Map quizInfo = querySnapshot.data.docs[index].data();
                     quizInfo['id'] = querySnapshot.data.docs[index].id;
                     return Card(
-                        child: InkWell(
-                            onTap: () {
-                              var linkFirestore = Provider.of<Fs>(context);
-                              Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                      builder: (BuildContext context) {
-                                return ChangeNotifierProvider.value(
-                                    value: linkFirestore,
-                                    child: QuizPage(quizInfo: quizInfo));
-                              }));
-                            },
-                            child: ListTile(title: Text(quizInfo['title']))));
+                        child: Column(children: <Widget>[
+                      InkWell(
+                          onTap: () {
+                            var linkFirestore = Provider.of<Fs>(context);
+                            Navigator.of(context).push(MaterialPageRoute<void>(
+                                builder: (BuildContext context) {
+                              return ChangeNotifierProvider.value(
+                                  value: linkFirestore,
+                                  child: QuizPage(quizInfo: quizInfo));
+                            }));
+                          },
+                          child: ListTile(title: Text(quizInfo['title']))),
+                      if (Provider.of<Fa>(context).getUser != null)
+                        ButtonBar(
+                          children: <Widget>[
+                            FlatButton(
+                              child: const Text('EDIT'),
+                              onPressed: () {},
+                            ),
+                          ],
+                        ),
+                    ]));
                   });
             }));
   }
