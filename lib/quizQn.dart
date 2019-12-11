@@ -15,6 +15,7 @@ class QuizQnState extends State<QuizQn> with AutomaticKeepAliveClientMixin {
   Map qnDetails() => widget.quizDetails;
   String qnTitle() => widget.quizDetails['title'];
   String qnType() => widget.quizDetails['type'];
+  int qnNumber() => widget.quizDetails['index'];
 
   Widget radioButtonWidget(int index, String header) {
     return Column(
@@ -63,8 +64,7 @@ class QuizQnState extends State<QuizQn> with AutomaticKeepAliveClientMixin {
     super.build(context);
     return Card(
         child: ListTile(
-            title:
-                Text((qnDetails()['index'] + 1).toString() + '.  ' + qnTitle()),
+            title: Text((qnNumber() + 1).toString() + '.  ' + qnTitle()),
             contentPadding: EdgeInsets.all(20.0),
             subtitle: setOfRadioBtnWidget()));
   }

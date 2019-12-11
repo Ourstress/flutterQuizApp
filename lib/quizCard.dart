@@ -6,12 +6,13 @@ import 'main.dart';
 import 'package:firebase/firestore.dart';
 
 class QuizCardContainer extends StatelessWidget {
-  void openQuizPage(context, quizQuestionInfo) {
+  void openQuizPage(context, quizQuestionInfo, [editMode = false]) {
     var linkFirestore = Provider.of<Fs>(context);
     Navigator.of(context)
         .push(MaterialPageRoute<void>(builder: (BuildContext context) {
       return ChangeNotifierProvider.value(
-          value: linkFirestore, child: QuizPage(quizInfo: quizQuestionInfo));
+          value: linkFirestore,
+          child: QuizPage(quizInfo: quizQuestionInfo, editMode: editMode));
     }));
   }
 
@@ -26,7 +27,7 @@ class QuizCardContainer extends StatelessWidget {
           children: <Widget>[
             FlatButton(
               child: const Text('EDIT'),
-              onPressed: () {},
+              onPressed: () => openQuizPage(context, quizQuestionInfo, true),
             ),
           ],
         ),

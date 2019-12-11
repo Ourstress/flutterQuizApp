@@ -6,6 +6,7 @@ import 'showAlertDialog.dart';
 import 'package:provider/provider.dart';
 import 'main.dart';
 import 'package:firebase/firestore.dart';
+import 'quizQnEdit.dart';
 
 class QuizAnswers with ChangeNotifier {
   Map _quizScore = {};
@@ -22,8 +23,9 @@ class QuizAnswers with ChangeNotifier {
 }
 
 class QuizPage extends StatelessWidget {
-  const QuizPage({Key key, this.quizInfo}) : super(key: key);
+  const QuizPage({Key key, this.quizInfo, this.editMode}) : super(key: key);
   final Map quizInfo;
+  final bool editMode;
 
   String getQuizTitle() => quizInfo['title'];
 
@@ -36,12 +38,7 @@ class QuizPage extends StatelessWidget {
     showAlertDialog(context, results);
   }
 
-  Widget quizPageContents(BuildContext context, int index, querySnapshot) {
-    final quizDetails = {
-      'title': querySnapshot.data.docs[index].data()['title'],
-      'type': querySnapshot.data.docs[index].data()['type'],
-      'index': index
-    };
+  Widget quizQuestions(context, index, querySnapshot, quizDetails) {
     Widget quizQuestion = QuizQn(
         key: UniqueKey(),
         quizDetails: quizDetails,
@@ -61,6 +58,21 @@ class QuizPage extends StatelessWidget {
     } else {
       return quizQuestion;
     }
+  }
+
+  Widget quizPageContents(BuildContext context, int index, querySnapshot) {
+    final quizDetails = {
+      'title': querySnapshot.data.docs[index].data()['title'],
+      'type': querySnapshot.data.docs[index].data()['type'],
+      'index': index
+    };
+    if (editMode == true) {
+      return QuizQnEditMode(
+        key: UniqueKey(),
+        quizDetails: quizDetails,
+      );
+    }
+    return quizQuestions(context, index, querySnapshot, quizDetails);
   }
 
   Widget quizQnContainer(context) {
