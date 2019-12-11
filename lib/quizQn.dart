@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'config.dart';
 
 class QuizQn extends StatefulWidget {
   QuizQn({Key key, this.quizDetails, this.updateQuizScore}) : super(key: key);
@@ -16,6 +15,7 @@ class QuizQnState extends State<QuizQn> with AutomaticKeepAliveClientMixin {
   String qnTitle() => widget.quizDetails['title'];
   String qnType() => widget.quizDetails['type'];
   int qnNumber() => widget.quizDetails['index'];
+  String scaleHeaders() => widget.quizDetails['scaleHeaders'];
 
   Widget radioButtonWidget(int index, String header) {
     return Column(
@@ -41,10 +41,12 @@ class QuizQnState extends State<QuizQn> with AutomaticKeepAliveClientMixin {
     );
   }
 
-  List<Widget> _makeRadioButtons(List<Map> scaleHeaders) {
-    return scaleHeaders.map<Widget>((Map scaleHeaders) {
-      final index = scaleHeaders.keys.first;
-      final header = scaleHeaders.values.first;
+  List<Widget> _makeRadioButtons(String scaleHeaders) {
+    return scaleHeaders.split(',').map<Widget>((String individualScale) {
+      final RegExp pattern = RegExp(r"(?<scaleValue>\d+) - (?<scaleLabel>.*)");
+      final RegExpMatch matches = pattern.firstMatch(individualScale);
+      final index = int.parse(matches.namedGroup("scaleValue"));
+      final header = matches.namedGroup("scaleLabel");
       return radioButtonWidget(index, header);
     }).toList();
   }
@@ -56,7 +58,7 @@ class QuizQnState extends State<QuizQn> with AutomaticKeepAliveClientMixin {
             child: Wrap(
                 crossAxisAlignment: WrapCrossAlignment.end,
                 alignment: WrapAlignment.spaceEvenly,
-                children: _makeRadioButtons(config['scaleHeaders']))));
+                children: _makeRadioButtons(scaleHeaders()))));
   }
 
   @override
