@@ -27,6 +27,42 @@ class QuizPage extends StatelessWidget {
 
   String getQuizTitle() => quizInfo['title'];
 
+  void onSubmit(context) {
+    var answers = Provider.of<QuizAnswers>(context).getQuizScore;
+    String results = 'Your result is ' +
+        calculateResults(answers)['outcome'] +
+        ' and your scores are ' +
+        calculateResults(answers)['scores'].toString();
+    showAlertDialog(context, results);
+  }
+
+  Widget quizPageContents(BuildContext context, int index, querySnapshot) {
+    final quizDetails = {
+      'title': querySnapshot.data.docs[index].data()['title'],
+      'type': querySnapshot.data.docs[index].data()['type'],
+      'index': index
+    };
+    Widget quizQuestion = QuizQn(
+        key: UniqueKey(),
+        quizDetails: quizDetails,
+        updateQuizScore:
+            Provider.of<QuizAnswers>(context, listen: false)._updateQuizScore);
+
+    if (index == querySnapshot.data.docs.length - 1) {
+      return Column(
+        children: <Widget>[
+          quizQuestion,
+          RaisedButton(
+            onPressed: () => onSubmit(context),
+            child: Text('Submit', style: TextStyle(fontSize: 20)),
+          ),
+        ],
+      );
+    } else {
+      return quizQuestion;
+    }
+  }
+
   Widget quizQnContainer(context) {
     return StreamBuilder<QuerySnapshot>(
         stream: Provider.of<Fs>(context, listen: false)
@@ -42,44 +78,8 @@ class QuizPage extends StatelessWidget {
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.all(16.0),
               itemCount: querySnapshot.data.docs.length,
-              itemBuilder: (BuildContext context, int index) {
-                final quizDetails = {
-                  'title': querySnapshot.data.docs[index].data()['title'],
-                  'type': querySnapshot.data.docs[index].data()['type'],
-                  'index': index
-                };
-                Widget quizQuestion = QuizQn(
-                    key: UniqueKey(),
-                    quizDetails: quizDetails,
-                    updateQuizScore:
-                        Provider.of<QuizAnswers>(context, listen: false)
-                            ._updateQuizScore);
-
-                if (index == querySnapshot.data.docs.length - 1) {
-                  return Column(
-                    children: <Widget>[
-                      quizQuestion,
-                      Consumer<QuizAnswers>(
-                        builder: (context, quizAnswers, child) => RaisedButton(
-                          onPressed: () {
-                            String results = 'Your result is ' +
-                                calculateResults(
-                                    quizAnswers.getQuizScore)['outcome'] +
-                                ' and your scores are ' +
-                                calculateResults(
-                                        quizAnswers.getQuizScore)['scores']
-                                    .toString();
-                            showAlertDialog(context, results);
-                          },
-                          child: Text('Submit', style: TextStyle(fontSize: 20)),
-                        ),
-                      )
-                    ],
-                  );
-                } else {
-                  return quizQuestion;
-                }
-              });
+              itemBuilder: (BuildContext context, int index) =>
+                  quizPageContents(context, index, querySnapshot));
         });
   }
 
