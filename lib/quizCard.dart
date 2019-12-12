@@ -17,34 +17,36 @@ class QuizCardContainer extends StatelessWidget {
   }
 
   Widget quizCard(context, quizQuestionInfo) {
-    return Card(
-        child: Column(children: <Widget>[
-      InkWell(
-          onTap: () => openQuizPage(context, quizQuestionInfo),
-          child: ListTile(title: Text(quizQuestionInfo['title']))),
-      if (Provider.of<Fa>(context).getUser != null)
-        ButtonBar(
-          children: <Widget>[
-            FlatButton(
-              child: const Text('EDIT'),
-              onPressed: () => openQuizPage(context, quizQuestionInfo, true),
+    return SizedBox(
+        width: config['cardMaxWidth'],
+        child: Card(
+            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          InkWell(
+              onTap: () => openQuizPage(context, quizQuestionInfo),
+              child: ListTile(title: Text(quizQuestionInfo['title']))),
+          if (Provider.of<Fa>(context).getUser != null)
+            ButtonBar(
+              children: <Widget>[
+                FlatButton(
+                  child: const Text('EDIT'),
+                  onPressed: () =>
+                      openQuizPage(context, quizQuestionInfo, true),
+                ),
+              ],
             ),
-          ],
-        ),
-    ]));
+        ])));
   }
 
-  Widget gridViewWidget(querySnapshot) {
-    return GridView.builder(
-        padding: EdgeInsets.all(16.0),
-        itemCount: querySnapshot.data.docs.length,
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: config['cardMaxWidth'], childAspectRatio: 1.2),
-        itemBuilder: (BuildContext context, int index) {
-          Map quizInfo = querySnapshot.data.docs[index].data();
-          quizInfo['id'] = querySnapshot.data.docs[index].id;
-          return quizCard(context, quizInfo);
-        });
+  Widget wrapViewWidget(context, querySnapshot) {
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 4.0,
+      children: querySnapshot.data.docs.map((snapshot) {
+        Map quizInfo = snapshot.data();
+        quizInfo['id'] = snapshot.id;
+        return quizCard(context, quizInfo);
+      }).toList(),
+    );
   }
 
   @override
@@ -56,7 +58,7 @@ class QuizCardContainer extends StatelessWidget {
             builder: (BuildContext context,
                 AsyncSnapshot<QuerySnapshot> querySnapshot) {
               if (!querySnapshot.hasData) return LinearProgressIndicator();
-              return gridViewWidget(querySnapshot);
+              return wrapViewWidget(context, querySnapshot);
             }));
   }
 }

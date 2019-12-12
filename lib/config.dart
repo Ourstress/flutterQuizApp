@@ -1,1 +1,1 @@
-const Map<String, dynamic> config = {'cardMaxWidth': 200.0};
+const Map<String, dynamic> config = {'cardMaxWidth': 300.0};
