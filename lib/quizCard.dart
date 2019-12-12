@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'config.dart';
 import 'quizPage.dart';
 import 'package:provider/provider.dart';
-import 'main.dart';
 import 'package:firebase/firestore.dart';
+import 'firebaseModel.dart';
 
 class QuizCardContainer extends StatelessWidget {
   void openQuizPage(context, quizQuestionInfo, [editMode = false]) {
@@ -51,10 +51,8 @@ class QuizCardContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Flexible(
         child: StreamBuilder<QuerySnapshot>(
-            stream: Provider.of<Fs>(context, listen: false)
-                .getStore
-                .collection('testQuiz')
-                .onSnapshot,
+            stream:
+                Provider.of<Fs>(context, listen: false).getQuizzes.onSnapshot,
             builder: (BuildContext context,
                 AsyncSnapshot<QuerySnapshot> querySnapshot) {
               if (!querySnapshot.hasData) return LinearProgressIndicator();

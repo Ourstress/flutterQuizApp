@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:quiz/quizCard.dart';
 import 'appBar.dart';
 import 'package:firebase/firebase.dart' as fb;
-import 'package:firebase/firestore.dart';
 import 'secrets.dart';
+import 'firebaseModel.dart';
 
 void main() {
   if (fb.apps.length == 0) {
@@ -16,25 +16,6 @@ void main() {
         storageBucket: secrets['storageBucket']);
   }
   return runApp(MyApp());
-}
-
-class Fs with ChangeNotifier {
-  Firestore store = fb.firestore();
-  Firestore get getStore => store;
-}
-
-class Fa with ChangeNotifier {
-  fb.Auth fbAuth = fb.auth();
-  fb.User user;
-
-  Fa() {
-    fbAuth.onAuthStateChanged.listen((e) {
-      user = e;
-      notifyListeners();
-    });
-  }
-
-  fb.User get getUser => user;
 }
 
 class MyApp extends StatelessWidget {

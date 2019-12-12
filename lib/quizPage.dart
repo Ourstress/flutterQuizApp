@@ -4,7 +4,7 @@ import 'quizQn.dart';
 import 'resultCalc.dart';
 import 'showAlertDialog.dart';
 import 'package:provider/provider.dart';
-import 'main.dart';
+import 'firebaseModel.dart';
 import 'package:firebase/firestore.dart';
 import 'quizQnEdit.dart';
 
@@ -79,9 +79,7 @@ class QuizPage extends StatelessWidget {
   Widget quizQnContainer(context) {
     return StreamBuilder<QuerySnapshot>(
         stream: Provider.of<Fs>(context, listen: false)
-            .getStore
-            .collection('testQuestions')
-            .where('quiz', 'array-contains', quizInfo['id'])
+            .getQuizQuestion(quizInfo['id'])
             .onSnapshot,
         builder:
             (BuildContext context, AsyncSnapshot<QuerySnapshot> querySnapshot) {
