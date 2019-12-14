@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz/showAlertDialog.dart';
 import 'config.dart';
 import 'quizPage.dart';
 import 'package:provider/provider.dart';
@@ -21,9 +22,22 @@ class QuizCardContainer extends StatelessWidget {
         width: config['cardMaxWidth'],
         child: Card(
             child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-          InkWell(
-              onTap: () => openQuizPage(context, quizQuestionInfo),
-              child: ListTile(title: Text(quizQuestionInfo['title']))),
+          Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+            Expanded(
+                child: InkWell(
+                    onTap: () => openQuizPage(context, quizQuestionInfo),
+                    child: ListTile(title: Text(quizQuestionInfo['title'])))),
+            if (Provider.of<Fa>(context).getUser != null)
+              ButtonTheme(
+                  minWidth: 50.0,
+                  child: FlatButton(
+                    child: Icon(Icons.edit),
+                    onPressed: () {
+                      showAlertDialog(context, 'editQuiz',
+                          mapProps: quizQuestionInfo);
+                    },
+                  )),
+          ]),
           if (Provider.of<Fa>(context).getUser != null)
             ButtonBar(
               children: <Widget>[
@@ -41,7 +55,7 @@ class QuizCardContainer extends StatelessWidget {
     return Wrap(
       spacing: 8.0,
       runSpacing: 4.0,
-      children: querySnapshot.data.docs.map((snapshot) {
+      children: querySnapshot.data.docs.map<Widget>((snapshot) {
         Map quizInfo = snapshot.data();
         quizInfo['id'] = snapshot.id;
         return quizCard(context, quizInfo);

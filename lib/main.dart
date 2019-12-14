@@ -26,7 +26,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Quiz app'),
+      home: MultiProvider(providers: [
+        ChangeNotifierProvider(create: (context) => Fs()),
+        ChangeNotifierProvider(create: (context) => Fa()),
+      ], child: MyHomePage(title: 'Quiz app')),
     );
   }
 }
@@ -66,12 +69,13 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: myAppBar(),
-        body: MultiProvider(
-          providers: [
-            ChangeNotifierProvider(create: (context) => Fs()),
-            ChangeNotifierProvider(create: (context) => Fa()),
-          ],
-          child: siteLandingView(context),
-        ));
+        body: siteLandingView(context),
+        floatingActionButton: Provider.of<Fa>(context).getUser != null
+            ? FloatingActionButton(
+                onPressed: () {},
+                tooltip: 'Add new quiz',
+                child: Icon(Icons.add),
+              )
+            : null);
   }
 }

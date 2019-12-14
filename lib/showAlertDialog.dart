@@ -1,28 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:quiz/quizEdit.dart';
 
-showAlertDialog(BuildContext context, String results) {
-  // set up the button
-  Widget okButton = FlatButton(
-    child: Text("OK"),
-    onPressed: () {
-      Navigator.of(context).pop();
-    },
-  );
+class OkButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      child: Text('OK'),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+  }
+}
 
-  // set up the AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: Text("Your result"),
-    content: Text(results),
-    actions: [
-      okButton,
-    ],
-  );
-
-  // show the dialog
+showAlertDialog(BuildContext context, String type,
+    {Map mapProps, String stringProps}) {
   showDialog(
     context: context,
+    barrierDismissible: true,
     builder: (BuildContext context) {
-      return alert;
+      if (type == 'alert') {
+        return AlertDialog(
+          title: Text("Your result"),
+          content: Text(stringProps),
+          actions: [
+            OkButton(),
+          ],
+        );
+      }
+      if (type == 'editQuiz') {
+        return AlertDialog(
+          content: QuizEditMode(key: UniqueKey(), quizQuestionInfo: mapProps),
+          actions: [
+            OkButton(),
+          ],
+        );
+      }
+      return Container();
     },
   );
 }
