@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'showAlertDialog.dart';
+import 'firebaseModel.dart';
+import 'package:provider/provider.dart';
 
 class QuizQnEditMode extends StatefulWidget {
   QuizQnEditMode({Key key, this.quizDetails}) : super(key: key);
@@ -12,10 +15,10 @@ class QuizQnEditMode extends StatefulWidget {
 
 class QuizQnEditModeState extends State<QuizQnEditMode> {
   final _formKey = GlobalKey<FormState>();
-  Map qnDetails() => widget.quizDetails;
-  String qnTitle() => widget.quizDetails['title'];
-  String qnType() => widget.quizDetails['type'];
-  int qnNumber() => widget.quizDetails['index'];
+  // Map _qnDetails() => widget.quizDetails;
+  String _qnTitle() => widget.quizDetails['title'];
+  // String _qnType() => widget.quizDetails['type'];
+  int _qnNumber() => widget.quizDetails['index'];
 
   @override
   Widget build(BuildContext context) {
@@ -25,18 +28,18 @@ class QuizQnEditModeState extends State<QuizQnEditMode> {
             child: ListTile(
                 title: TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'Question ${qnNumber() + 1}',
+                    labelText: 'Question ${_qnNumber() + 1}',
                   ),
                   validator: (value) {
                     if (value.isEmpty) {
                       return 'Please enter some text';
                     }
-                    if (value == qnTitle()) {
+                    if (value == _qnTitle()) {
                       return 'No changes detected';
                     }
                     return null;
                   },
-                  initialValue: qnTitle(),
+                  initialValue: _qnTitle(),
                   minLines: 1,
                   maxLines: 3,
                 ),
@@ -65,8 +68,11 @@ class QuizEditMode extends StatefulWidget {
 class QuizEditModeState extends State<QuizEditMode> {
   final _formKey = GlobalKey<FormState>();
   Map quizQuestionInfo() => widget.quizQuestionInfo;
-  String quizTitle() => widget.quizQuestionInfo['title'];
-  String quizDesc() => widget.quizQuestionInfo['desc'];
+  String _quizTitle() => widget.quizQuestionInfo['title'];
+  String _quizDesc() => widget.quizQuestionInfo['desc'];
+  String _quizId() => widget.quizQuestionInfo['id'];
+  String _titleEdits;
+  String _descEdits;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +83,8 @@ class QuizEditModeState extends State<QuizEditMode> {
                 title:
                     Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
                   TextFormField(
-                    initialValue: quizTitle(),
+                    onSaved: (String value) => _titleEdits = value,
+                    initialValue: _quizTitle(),
                     decoration: InputDecoration(
                       labelText: 'Edit quiz title',
                     ),
@@ -85,25 +92,20 @@ class QuizEditModeState extends State<QuizEditMode> {
                       if (value.isEmpty) {
                         return 'Please enter some text';
                       }
-                      if (value == quizTitle()) {
-                        return 'No changes detected';
-                      }
                       return null;
                     },
                     minLines: 1,
                     maxLines: 2,
                   ),
                   TextFormField(
-                    initialValue: quizDesc(),
+                    onSaved: (String value) => _descEdits = value,
+                    initialValue: _quizDesc(),
                     decoration: InputDecoration(
                       labelText: 'Edit quiz description',
                     ),
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'Please enter some text';
-                      }
-                      if (value == quizDesc()) {
-                        return 'No changes detected';
                       }
                       return null;
                     },
@@ -114,8 +116,16 @@ class QuizEditModeState extends State<QuizEditMode> {
                 trailing: RaisedButton(
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
-                      Scaffold.of(context).showSnackBar(
-                          SnackBar(content: Text('Processing Data')));
+                      _formKey.currentState.save();
+                      if (_titleEdits == _quizTitle() &&
+                          _descEdits == _quizDesc()) {
+                        showAlertDialog(context, 'alert',
+                            stringProps: 'No changes detected');
+                      } else {
+                        Provider.of<Fs>(context).quizInfoEdits(_quizId(),
+                            {'title': _titleEdits, 'desc': _descEdits});
+                      }
+                      Navigator.of(context).pop();
                     }
                   },
                   child: Text('Save'),

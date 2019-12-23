@@ -9,6 +9,9 @@ class Fs with ChangeNotifier {
   Query getQuizQuestion(quizId) => getStore
       .collection('testQuestions')
       .where('quiz', 'array-contains', quizId);
+  void quizInfoEdits(quizId, updatedQuizInfo) {
+    getStore.collection('testQuiz').doc(quizId).set(updatedQuizInfo);
+  }
 }
 
 class Fa with ChangeNotifier {
@@ -22,5 +25,6 @@ class Fa with ChangeNotifier {
     });
   }
 
+  // bool get getUser => true;
   fb.User get getUser => user;
 }
