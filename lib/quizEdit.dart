@@ -15,10 +15,12 @@ class QuizQnEditMode extends StatefulWidget {
 
 class QuizQnEditModeState extends State<QuizQnEditMode> {
   final _formKey = GlobalKey<FormState>();
-  // Map _qnDetails() => widget.quizDetails;
   String _qnTitle() => widget.quizDetails['title'];
-  // String _qnType() => widget.quizDetails['type'];
+  String _qnType() => widget.quizDetails['type'];
+  String _qnScale() => widget.quizDetails['scale'];
+  String _qnId() => widget.quizDetails['id'];
   int _qnNumber() => widget.quizDetails['index'];
+  Map _edits = {'title': '', 'classification': '', 'scale': ''};
 
   @override
   Widget build(BuildContext context) {
@@ -26,28 +28,47 @@ class QuizQnEditModeState extends State<QuizQnEditMode> {
         key: _formKey,
         child: Card(
             child: ListTile(
-                title: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Question ${_qnNumber() + 1}',
-                  ),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    if (value == _qnTitle()) {
-                      return 'No changes detected';
-                    }
-                    return null;
-                  },
-                  initialValue: _qnTitle(),
-                  minLines: 1,
-                  maxLines: 3,
-                ),
+                title: Column(
+                    children: [
+                  {'title': _qnTitle()},
+                  {'classification': _qnType()},
+                  {'scale': _qnScale()}
+                ].map<Widget>((field) {
+                  return TextFormField(
+                    onSaved: (String value) => _edits[field.keys.first] = value,
+                    decoration: InputDecoration(
+                      labelText:
+                          'Question ${_qnNumber() + 1} ${field.keys.first}',
+                    ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                    initialValue: field.values.first,
+                    minLines: 1,
+                    maxLines: 3,
+                  );
+                }).toList()),
                 trailing: RaisedButton(
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
-                      Scaffold.of(context).showSnackBar(
-                          SnackBar(content: Text('Processing Data')));
+                      _formKey.currentState.save();
+                      if (_edits['title'] == _qnTitle() &&
+                          _edits['classification'] == _qnType() &&
+                          _edits['scale'] == _qnScale()) {
+                        showAlertDialog(context, 'alert',
+                            stringProps: 'No changes detected');
+                      } else {
+                        Provider.of<Fs>(context).quizQnEdits(_qnId(), {
+                          'title': _edits['title'],
+                          'type': _edits['classification'],
+                          'scale': _edits['scale']
+                        });
+                        showAlertDialog(context, 'alert',
+                            stringProps: 'Changes saved');
+                      }
                     }
                   },
                   child: Text('Save'),

@@ -12,6 +12,13 @@ class Fs with ChangeNotifier {
   void quizInfoEdits(quizId, updatedQuizInfo) {
     getStore.collection('testQuiz').doc(quizId).set(updatedQuizInfo);
   }
+
+  Future quizQnEdits(quizQnId, updatedQuizQnInfo) {
+    return getStore
+        .collection('testQuestions')
+        .doc(quizQnId)
+        .update(data: updatedQuizQnInfo);
+  }
 }
 
 class Fa with ChangeNotifier {

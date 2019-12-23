@@ -86,7 +86,8 @@ class QuizPage extends StatelessWidget {
     final quizDetails = {
       'title': querySnapshot.data.docs[index].data()['title'],
       'type': querySnapshot.data.docs[index].data()['type'],
-      'scaleHeaders': querySnapshot.data.docs[index].data()['scale'],
+      'scale': querySnapshot.data.docs[index].data()['scale'],
+      'id': querySnapshot.data.docs[index].id,
       'index': index,
       'quizDesc': quizInfo['desc']
     };
