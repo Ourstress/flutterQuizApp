@@ -83,6 +83,27 @@ class QuizPage extends StatelessWidget {
 
   Widget quizPageContents(
       BuildContext context, int index, querySnapshot, quizInfo) {
+    final emptyQuizDetails = {
+      'title': '',
+      'type': '',
+      'scale':
+          '1 - Strongly disagree, 2 - Disagree, 3 - Neutral, 4 - Agree, 5 - Strongly agree',
+      'id': '',
+      'quiz': [],
+      'index': index + 1,
+      'quizDesc': quizInfo['desc'],
+      'quizId': quizInfo['id']
+    };
+    if (querySnapshot.data.empty) {
+      if (editMode == true) {
+        return QuizQnEditMode(
+          key: UniqueKey(),
+          quizDetails: emptyQuizDetails,
+        );
+      } else {
+        return Text('No questions here yet');
+      }
+    }
     final quizDetails = {
       'title': querySnapshot.data.docs[index].data()['title'],
       'type': querySnapshot.data.docs[index].data()['type'],
@@ -93,16 +114,7 @@ class QuizPage extends StatelessWidget {
       'quizDesc': quizInfo['desc'],
       'quizId': quizInfo['id']
     };
-    final emptyQuizDetails = {
-      'title': '',
-      'type': '',
-      'scale': '',
-      'id': '',
-      'quiz': [],
-      'index': index + 1,
-      'quizDesc': quizInfo['desc'],
-      'quizId': quizInfo['id']
-    };
+
     if (index == querySnapshot.data.docs.length - 1 && editMode == true) {
       return Column(
         children: <Widget>[
@@ -134,7 +146,9 @@ class QuizPage extends StatelessWidget {
         builder:
             (BuildContext context, AsyncSnapshot<QuerySnapshot> querySnapshot) {
           if (!querySnapshot.hasData) return LinearProgressIndicator();
-
+          if (querySnapshot.data.empty) {
+            return quizPageContents(context, -1, querySnapshot, quizInfo);
+          }
           return ListView.builder(
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.all(16.0),
