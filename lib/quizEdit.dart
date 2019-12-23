@@ -99,57 +99,60 @@ class QuizEditModeState extends State<QuizEditMode> {
   Widget build(BuildContext context) {
     return Form(
         key: _formKey,
-        child: Card(
-            child: ListTile(
-                title:
-                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                  TextFormField(
-                    onSaved: (String value) => _titleEdits = value,
-                    initialValue: _quizTitle(),
-                    decoration: InputDecoration(
-                      labelText: 'Edit quiz title',
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
-                    minLines: 1,
-                    maxLines: 2,
-                  ),
-                  TextFormField(
-                    onSaved: (String value) => _descEdits = value,
-                    initialValue: _quizDesc(),
-                    decoration: InputDecoration(
-                      labelText: 'Edit quiz description',
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
-                    minLines: 1,
-                    maxLines: 3,
-                  )
-                ]),
-                trailing: RaisedButton(
-                  onPressed: () {
-                    if (_formKey.currentState.validate()) {
-                      _formKey.currentState.save();
-                      if (_titleEdits == _quizTitle() &&
-                          _descEdits == _quizDesc()) {
-                        showAlertDialog(context, 'alert',
-                            stringProps: 'No changes detected');
-                      } else {
-                        Provider.of<Fs>(context).quizInfoEdits(_quizId(),
-                            {'title': _titleEdits, 'desc': _descEdits});
-                      }
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  child: Text('Save'),
-                ))));
+        child: Container(
+            constraints: BoxConstraints(minWidth: 300),
+            child: Card(
+                child: ListTile(
+                    title: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          TextFormField(
+                            onSaved: (String value) => _titleEdits = value,
+                            initialValue: _quizTitle(),
+                            decoration: InputDecoration(
+                              labelText: 'Edit quiz title',
+                            ),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              return null;
+                            },
+                            minLines: 1,
+                            maxLines: 2,
+                          ),
+                          TextFormField(
+                            onSaved: (String value) => _descEdits = value,
+                            initialValue: _quizDesc(),
+                            decoration: InputDecoration(
+                              labelText: 'Edit quiz description',
+                            ),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              return null;
+                            },
+                            minLines: 1,
+                            maxLines: 3,
+                          )
+                        ]),
+                    trailing: RaisedButton(
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          _formKey.currentState.save();
+                          if (_titleEdits == _quizTitle() &&
+                              _descEdits == _quizDesc()) {
+                            showAlertDialog(context, 'alert',
+                                stringProps: 'No changes detected');
+                          } else {
+                            Provider.of<Fs>(context).quizInfoEdits(_quizId(),
+                                {'title': _titleEdits, 'desc': _descEdits});
+                          }
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: Text('Save'),
+                    )))));
   }
 }

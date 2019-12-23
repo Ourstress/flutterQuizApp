@@ -5,6 +5,7 @@ import 'appBar.dart';
 import 'package:firebase/firebase.dart' as fb;
 import 'secrets.dart';
 import 'firebaseModel.dart';
+import 'package:quiz/showAlertDialog.dart';
 
 void main() {
   if (fb.apps.length == 0) {
@@ -72,7 +73,9 @@ class MyHomePage extends StatelessWidget {
         body: siteLandingView(context),
         floatingActionButton: Provider.of<Fa>(context).getUser != null
             ? FloatingActionButton(
-                onPressed: () {},
+                onPressed: () {
+                  showAlertDialog(context, 'editQuiz', mapProps: {});
+                },
                 tooltip: 'Add new quiz',
                 child: Icon(Icons.add),
               )

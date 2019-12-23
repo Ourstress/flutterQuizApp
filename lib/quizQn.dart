@@ -15,7 +15,7 @@ class QuizQnState extends State<QuizQn> with AutomaticKeepAliveClientMixin {
   String qnTitle() => widget.quizDetails['title'];
   String qnType() => widget.quizDetails['type'];
   int qnNumber() => widget.quizDetails['index'];
-  String scaleHeaders() => widget.quizDetails['scaleHeaders'];
+  String scaleHeaders() => widget.quizDetails['scale'];
 
   Widget radioButtonWidget(int index, String header) {
     return Column(
