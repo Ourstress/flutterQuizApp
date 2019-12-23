@@ -87,10 +87,36 @@ class QuizPage extends StatelessWidget {
       'title': querySnapshot.data.docs[index].data()['title'],
       'type': querySnapshot.data.docs[index].data()['type'],
       'scale': querySnapshot.data.docs[index].data()['scale'],
+      'quiz': querySnapshot.data.docs[index].data()['quiz'],
       'id': querySnapshot.data.docs[index].id,
       'index': index,
-      'quizDesc': quizInfo['desc']
+      'quizDesc': quizInfo['desc'],
+      'quizId': quizInfo['id']
     };
+    final emptyQuizDetails = {
+      'title': '',
+      'type': '',
+      'scale': '',
+      'id': '',
+      'quiz': [],
+      'index': index + 1,
+      'quizDesc': quizInfo['desc'],
+      'quizId': quizInfo['id']
+    };
+    if (index == querySnapshot.data.docs.length - 1 && editMode == true) {
+      return Column(
+        children: <Widget>[
+          QuizQnEditMode(
+            key: UniqueKey(),
+            quizDetails: quizDetails,
+          ),
+          QuizQnEditMode(
+            key: UniqueKey(),
+            quizDetails: emptyQuizDetails,
+          ),
+        ],
+      );
+    }
     if (editMode == true) {
       return QuizQnEditMode(
         key: UniqueKey(),

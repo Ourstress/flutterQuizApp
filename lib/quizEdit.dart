@@ -20,6 +20,8 @@ class QuizQnEditModeState extends State<QuizQnEditMode> {
   String _qnScale() => widget.quizDetails['scale'];
   String _qnId() => widget.quizDetails['id'];
   int _qnNumber() => widget.quizDetails['index'];
+  List _qnQuiz() => widget.quizDetails['quiz'];
+  String _quizId() => widget.quizDetails['quizId'];
   Map _edits = {'title': '', 'classification': '', 'scale': ''};
 
   @override
@@ -61,11 +63,19 @@ class QuizQnEditModeState extends State<QuizQnEditMode> {
                         showAlertDialog(context, 'alert',
                             stringProps: 'No changes detected');
                       } else {
-                        Provider.of<Fs>(context).quizQnEdits(_qnId(), {
+                        Map<String, dynamic> updatedQuizQnInfo = {
                           'title': _edits['title'],
                           'type': _edits['classification'],
-                          'scale': _edits['scale']
-                        });
+                          'scale': _edits['scale'],
+                          'quiz': _qnQuiz().contains(_quizId)
+                              ? _qnQuiz()
+                              : [_quizId()]
+                        };
+                        _qnId() == ''
+                            ? Provider.of<Fs>(context)
+                                .quizQnAdd(updatedQuizQnInfo)
+                            : Provider.of<Fs>(context)
+                                .quizQnEdits(_qnId(), updatedQuizQnInfo);
                         showAlertDialog(context, 'alert',
                             stringProps: 'Changes saved');
                       }

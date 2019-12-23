@@ -19,6 +19,10 @@ class Fs with ChangeNotifier {
         .doc(quizQnId)
         .update(data: updatedQuizQnInfo);
   }
+
+  Future quizQnAdd(updatedQuizQnInfo) {
+    return getStore.collection('testQuestions').add(updatedQuizQnInfo);
+  }
 }
 
 class Fa with ChangeNotifier {
