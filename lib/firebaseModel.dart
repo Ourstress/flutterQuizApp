@@ -31,6 +31,10 @@ class Fs with ChangeNotifier {
   Future quizDelete(quizId) {
     return getStore.collection(quizCollection).doc(quizId).delete();
   }
+
+  Future quizQnDelete(quizQnId) {
+    return getStore.collection(quizQnCollection).doc(quizQnId).delete();
+  }
 }
 
 class Fa with ChangeNotifier {
