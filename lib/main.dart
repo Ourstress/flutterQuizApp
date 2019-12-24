@@ -14,7 +14,10 @@ void main() {
         authDomain: secrets['authDomain'],
         databaseURL: secrets['databaseURL'],
         projectId: secrets['projectId'],
-        storageBucket: secrets['storageBucket']);
+        storageBucket: secrets['storageBucket'],
+        messagingSenderId: secrets['messagingSenderId'],
+        appId: secrets['appId'],
+        measurementId: secrets['measurementId']);
   }
   return runApp(MyApp());
 }
