@@ -5,23 +5,31 @@ import 'package:firebase/firebase.dart' as fb;
 class Fs with ChangeNotifier {
   Firestore store = fb.firestore();
   Firestore get getStore => store;
-  CollectionReference get getQuizzes => getStore.collection('testQuiz');
+
+  String quizCollection = 'testQuiz';
+  String quizQnCollection = 'testQuestions';
+
+  CollectionReference get getQuizzes => getStore.collection(quizCollection);
   Query getQuizQuestion(quizId) => getStore
-      .collection('testQuestions')
+      .collection(quizQnCollection)
       .where('quiz', 'array-contains', quizId);
   void quizInfoEdits(quizId, updatedQuizInfo) {
-    getStore.collection('testQuiz').doc(quizId).set(updatedQuizInfo);
+    getStore.collection(quizCollection).doc(quizId).set(updatedQuizInfo);
   }
 
   Future quizQnEdits(quizQnId, updatedQuizQnInfo) {
     return getStore
-        .collection('testQuestions')
+        .collection(quizQnCollection)
         .doc(quizQnId)
         .update(data: updatedQuizQnInfo);
   }
 
   Future quizQnAdd(updatedQuizQnInfo) {
-    return getStore.collection('testQuestions').add(updatedQuizQnInfo);
+    return getStore.collection(quizQnCollection).add(updatedQuizQnInfo);
+  }
+
+  Future quizDelete(quizId) {
+    return getStore.collection(quizCollection).doc(quizId).delete();
   }
 }
 

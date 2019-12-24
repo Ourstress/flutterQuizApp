@@ -72,9 +72,9 @@ class QuizQnEditModeState extends State<QuizQnEditMode> {
                               : [_quizId()]
                         };
                         _qnId() == ''
-                            ? Provider.of<Fs>(context)
+                            ? Provider.of<Fs>(context, listen: false)
                                 .quizQnAdd(updatedQuizQnInfo)
-                            : Provider.of<Fs>(context)
+                            : Provider.of<Fs>(context, listen: false)
                                 .quizQnEdits(_qnId(), updatedQuizQnInfo);
                         showAlertDialog(context, 'alert',
                             stringProps: 'Changes saved');
@@ -156,8 +156,9 @@ class QuizEditModeState extends State<QuizEditMode> {
                             showAlertDialog(context, 'alert',
                                 stringProps: 'No changes detected');
                           } else {
-                            Provider.of<Fs>(context).quizInfoEdits(_quizId(),
-                                {'title': _titleEdits, 'desc': _descEdits});
+                            Provider.of<Fs>(context, listen: false)
+                                .quizInfoEdits(_quizId(),
+                                    {'title': _titleEdits, 'desc': _descEdits});
                           }
                           Navigator.of(context).pop();
                         }

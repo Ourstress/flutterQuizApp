@@ -40,7 +40,24 @@ class QuizCardContainer extends StatelessWidget {
           ]),
           if (Provider.of<Fa>(context).getUser != null)
             ButtonBar(
+              alignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
+                IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () => showDialog(
+                        context: context,
+                        child: AlertDialog(
+                            title: Text("Confirm delete?"),
+                            content: Text("Deletion is irreversible!"),
+                            actions: [
+                              FlatButton(
+                                  child: const Text('DELETE'),
+                                  onPressed: () {
+                                    Provider.of<Fs>(context, listen: false)
+                                        .quizDelete(quizQuestionInfo['id']);
+                                    Navigator.of(context).pop();
+                                  }),
+                            ]))),
                 FlatButton(
                   child: const Text('EDIT'),
                   onPressed: () =>
