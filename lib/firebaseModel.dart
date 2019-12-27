@@ -35,6 +35,19 @@ class Fs with ChangeNotifier {
   Future quizQnDelete(quizQnId) {
     return getStore.collection(quizQnCollection).doc(quizQnId).delete();
   }
+
+  Future updateQuizResponse(quizResponse) {
+    Map<String, dynamic> updatedResponse = {
+      'responses.${quizResponse['email'].replaceAll('.', '%2E')}': {
+        'results': quizResponse['results'],
+        'gender': quizResponse['gender']
+      }
+    };
+    return getStore
+        .collection(quizCollection)
+        .doc(quizResponse['quizId'])
+        .update(data: updatedResponse);
+  }
 }
 
 class Fa with ChangeNotifier {

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-// import 'firebaseModel.dart';
-// import 'package:provider/provider.dart';
+import 'firebaseModel.dart';
+import 'package:provider/provider.dart';
 import 'package:quiz/showAlertDialog.dart';
 
 class EmailGenderForm extends StatefulWidget {
+  const EmailGenderForm({Key key, this.quizId, this.quizResults})
+      : super(key: key);
+  final String quizId;
+  final Map quizResults;
+
   @override
   EmailGenderFormState createState() {
     return EmailGenderFormState();
@@ -12,7 +17,17 @@ class EmailGenderForm extends StatefulWidget {
 
 class EmailGenderFormState extends State<EmailGenderForm> {
   final _formKey = GlobalKey<FormState>();
-  String dropdownValue = 'Female';
+  String _gender = 'Female';
+  String _email = '';
+  String _results;
+
+  void initState() {
+    _results = 'Your result is ' +
+        widget.quizResults['outcome'] +
+        ' and your scores are ' +
+        widget.quizResults['scores'].toString();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +36,7 @@ class EmailGenderFormState extends State<EmailGenderForm> {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Flexible(
               child: TextFormField(
-            onSaved: (String value) => print(value),
+            onSaved: (String value) => _email = value,
             decoration: InputDecoration(
               labelText:
                   'Please enter an NUS email. The results will also be emailed to you.',
@@ -36,7 +51,7 @@ class EmailGenderFormState extends State<EmailGenderForm> {
           )),
           Flexible(
               child: DropdownButtonFormField<String>(
-            value: dropdownValue,
+            value: _gender,
             decoration: InputDecoration(
               labelText: 'Please enter your gender',
             ),
@@ -46,7 +61,7 @@ class EmailGenderFormState extends State<EmailGenderForm> {
             elevation: 16,
             onChanged: (String newValue) {
               setState(() {
-                dropdownValue = newValue;
+                _gender = newValue;
               });
             },
             items: <String>['Male', 'Female']
@@ -63,10 +78,20 @@ class EmailGenderFormState extends State<EmailGenderForm> {
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
+
+                      Map quizResponse = {
+                        'quizId': widget.quizId,
+                        'results': widget.quizResults,
+                        'email': _email,
+                        'gender': _gender
+                      };
+                      print(quizResponse);
+                      Provider.of<Fs>(context, listen: false)
+                          .updateQuizResponse(quizResponse);
                       Navigator.of(context).pop();
                       showAlertDialog(context, 'alert',
                           stringProps:
-                              'Your response has been submitted and your results will be emailed to you shortly');
+                              '$_results\n\nYour response has been submitted and your results will be emailed to you shortly');
                     }
                   }))
         ]));

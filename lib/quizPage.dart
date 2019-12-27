@@ -39,31 +39,32 @@ class QuizPage extends StatelessWidget {
 
   String getQuizTitle() => quizInfo['title'];
 
-  void onSubmit(context) {
+  void onSubmit(BuildContext context, Map quizDetails) {
     var answers = Provider.of<QuizAnswers>(context).getQuizScore;
     var totalQuestions =
         Provider.of<QuizAnswers>(context, listen: false).getTotalQuizQns;
-    String results = 'Your result is ' +
-        calculateResults(answers)['outcome'] +
-        ' and your scores are ' +
-        calculateResults(answers)['scores'].toString();
 
     if (answers.length != totalQuestions) {
       return showAlertDialog(context, 'alert',
           stringProps: 'Please answer ALL the questions before submitting');
     } else {
+      var linkFirestore = Provider.of<Fs>(context);
       showDialog(
           context: context,
-          child: AlertDialog(
-              title: Text(reqInfoToSubmit),
-              content: EmailGenderForm(),
-              actions: [
-                FlatButton(
-                    child: const Text('Exit'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    }),
-              ]));
+          child: ChangeNotifierProvider.value(
+              value: linkFirestore,
+              child: AlertDialog(
+                  title: Text(reqInfoToSubmit),
+                  content: EmailGenderForm(
+                      quizId: quizDetails['quizId'],
+                      quizResults: calculateResults(answers)),
+                  actions: [
+                    FlatButton(
+                        child: const Text('Exit'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        }),
+                  ])));
     }
   }
 
@@ -80,7 +81,7 @@ class QuizPage extends StatelessWidget {
               style: Theme.of(context).textTheme.title),
           singlequizQn,
           RaisedButton(
-            onPressed: () => onSubmit(context),
+            onPressed: () => onSubmit(context, quizDetails),
             child: Text('Submit', style: TextStyle(fontSize: 20)),
           ),
         ],
@@ -100,7 +101,7 @@ class QuizPage extends StatelessWidget {
         children: <Widget>[
           singlequizQn,
           RaisedButton(
-            onPressed: () => onSubmit(context),
+            onPressed: () => onSubmit(context, quizDetails),
             child: Text('Submit', style: TextStyle(fontSize: 20)),
           ),
         ],
