@@ -17,7 +17,6 @@ class OkButton extends StatelessWidget {
 
 showAlertDialog(BuildContext context, String type,
     {Map mapProps, String stringProps}) {
-  var linkFirestore = Provider.of<Fs>(context);
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -32,6 +31,7 @@ showAlertDialog(BuildContext context, String type,
         );
       }
       if (type == 'editQuiz') {
+        var linkFirestore = Provider.of<Fs>(context);
         return ChangeNotifierProvider.value(
             value: linkFirestore,
             child: AlertDialog(

@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'appBar.dart';
 import 'quizQn.dart';
 import 'resultCalc.dart';
-import 'showAlertDialog.dart';
 import 'package:provider/provider.dart';
+import 'package:quiz/showAlertDialog.dart';
 import 'firebaseModel.dart';
 import 'package:firebase/firestore.dart';
 import 'quizEdit.dart';
+import 'dataInputForm.dart';
+
+const String reqInfoToSubmit =
+    'Please help to provide us with some further information';
 
 class QuizAnswers with ChangeNotifier {
   Map _quizScore = {};
+  int _totalQuizQuestions = 0;
 
   void _updateQuizScore({String question, String questionType, int value}) {
     if (!_quizScore.containsKey(question)) {
@@ -19,7 +24,12 @@ class QuizAnswers with ChangeNotifier {
     _quizScore[question]['value'] = value;
   }
 
+  void updateQuizQuestions({int numberOfQns}) {
+    _totalQuizQuestions = numberOfQns;
+  }
+
   Map get getQuizScore => _quizScore;
+  int get getTotalQuizQns => _totalQuizQuestions;
 }
 
 class QuizPage extends StatelessWidget {
@@ -31,11 +41,30 @@ class QuizPage extends StatelessWidget {
 
   void onSubmit(context) {
     var answers = Provider.of<QuizAnswers>(context).getQuizScore;
+    var totalQuestions =
+        Provider.of<QuizAnswers>(context, listen: false).getTotalQuizQns;
     String results = 'Your result is ' +
         calculateResults(answers)['outcome'] +
         ' and your scores are ' +
         calculateResults(answers)['scores'].toString();
-    showAlertDialog(context, 'alert', stringProps: results);
+
+    if (answers.length != totalQuestions) {
+      return showAlertDialog(context, 'alert',
+          stringProps: 'Please answer ALL the questions before submitting');
+    } else {
+      showDialog(
+          context: context,
+          child: AlertDialog(
+              title: Text(reqInfoToSubmit),
+              content: EmailGenderForm(),
+              actions: [
+                FlatButton(
+                    child: const Text('Exit'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    }),
+              ]));
+    }
   }
 
   Widget quizQuestion(context, index, querySnapshot, quizDetails) {
@@ -149,6 +178,8 @@ class QuizPage extends StatelessWidget {
           if (querySnapshot.data.empty) {
             return quizPageContents(context, -1, querySnapshot, quizInfo);
           }
+          Provider.of<QuizAnswers>(context, listen: false)
+              .updateQuizQuestions(numberOfQns: querySnapshot.data.docs.length);
           return ListView.builder(
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.all(16.0),
