@@ -40,7 +40,8 @@ class Fs with ChangeNotifier {
     Map<String, dynamic> updatedResponse = {
       'responses.${quizResponse['email'].replaceAll('.', '%2E')}': {
         'results': quizResponse['results'],
-        'gender': quizResponse['gender']
+        'gender': quizResponse['gender'],
+        'createdAt': FieldValue.serverTimestamp()
       }
     };
     return getStore

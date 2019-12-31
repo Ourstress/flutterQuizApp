@@ -3,6 +3,11 @@ import 'appBar.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
 class ResponsePage extends StatelessWidget {
+  const ResponsePage({Key key, this.quizInfo}) : super(key: key);
+  final Map quizInfo;
+
+  ProcessQuiz processQuizInfo() => ProcessQuiz(quizInfo);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,4 +39,12 @@ class LinearSales {
   final int sales;
 
   LinearSales(this.year, this.sales);
+}
+
+class ProcessQuiz {
+  final Map quizInfo;
+
+  ProcessQuiz(this.quizInfo);
+
+  Map get quizResponses => quizInfo['responses'];
 }

@@ -85,7 +85,6 @@ class EmailGenderFormState extends State<EmailGenderForm> {
                         'email': _email,
                         'gender': _gender
                       };
-                      print(quizResponse);
                       Provider.of<Fs>(context, listen: false)
                           .updateQuizResponse(quizResponse);
                       Navigator.of(context).pop();

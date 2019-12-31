@@ -18,12 +18,13 @@ class QuizCardContainer extends StatelessWidget {
     }));
   }
 
-  void openResponsePage(context) {
+  void openResponsePage(context, quizQuestionInfo) {
     var linkFirestore = Provider.of<Fs>(context);
     Navigator.of(context)
         .push(MaterialPageRoute<void>(builder: (BuildContext context) {
       return ChangeNotifierProvider.value(
-          value: linkFirestore, child: ResponsePage());
+          value: linkFirestore,
+          child: ResponsePage(quizInfo: quizQuestionInfo));
     }));
   }
 
@@ -70,7 +71,7 @@ class QuizCardContainer extends StatelessWidget {
                             ]))),
                 FlatButton(
                   child: const Text('RESPONSES'),
-                  onPressed: () => openResponsePage(context),
+                  onPressed: () => openResponsePage(context, quizQuestionInfo),
                 ),
                 FlatButton(
                   child: const Text('EDIT'),
