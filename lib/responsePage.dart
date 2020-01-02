@@ -44,8 +44,8 @@ class ChartWidget extends StatelessWidget {
           flex: 1,
           child: Container(
               alignment: Alignment.center,
-              child: Text('Quiz results',
-                  style: Theme.of(context).textTheme.title)),
+              child: Text('Quiz responses',
+                  style: Theme.of(context).textTheme.display1)),
         ),
         Flexible(
             flex: 4,
@@ -54,7 +54,7 @@ class ChartWidget extends StatelessWidget {
                 Flexible(
                   child: ListTile(
                     leading: SizedBox(width: 100.0, child: DropdownSelect()),
-                    title: Text('hi'),
+                    title: Text('Toggle fields'),
                   ),
                 ),
                 Flexible(
@@ -75,7 +75,7 @@ class DropdownSelect extends StatefulWidget {
 }
 
 class DropdownSelectState extends State<DropdownSelect> {
-  int selectedValue = 2;
+  int selectedValue = 1;
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<int>(
@@ -120,16 +120,17 @@ charts.BarChart _createBarChart(data) => charts.BarChart(
 //         arcWidth: 60, arcRendererDecorators: [charts.ArcLabelDecorator()]));
 
 List<charts.Series<TabulatedResponse, String>> _createChartData(data) {
-  return [
-    charts.Series<TabulatedResponse, String>(
-      id: 'Sales',
-      domainFn: (TabulatedResponse results, _) => results.type,
-      measureFn: (TabulatedResponse results, _) => results.count,
-      data: data,
-      labelAccessorFn: (TabulatedResponse results, _) =>
-          '${results.type}: ${results.count}',
-    )
-  ];
+  List<charts.Series<TabulatedResponse, String>> chartData = [];
+  data.forEach((String chartName, List<TabulatedResponse> chartInfo) =>
+      chartData.add(charts.Series<TabulatedResponse, String>(
+        id: chartName,
+        domainFn: (TabulatedResponse results, _) => results.type,
+        measureFn: (TabulatedResponse results, _) => results.count,
+        data: chartInfo,
+        labelAccessorFn: (TabulatedResponse results, _) =>
+            '${results.type}: ${results.count}',
+      )));
+  return chartData;
 }
 
 class QuizResponse {
@@ -158,9 +159,26 @@ class ProcessQuiz {
           QuizResponse(elem['gender'], elem['results'], elem['createdAt']))
       .toList();
 
-  List<TabulatedResponse> tabulateResponses(selectedOption) {
+  Map<String, List<TabulatedResponse>> tabulateResponses(selectedOption) {
+    Map<String, List<TabulatedResponse>> returnedMap = {};
+    if (selectedOption == 'all') {
+      returnedMap = {selectedOption: tabulateList(quizResponses)};
+    } else if (selectedOption == 'gender') {
+      List quizResponsesMale =
+          quizResponses.where((item) => item.gender == 'Male').toList();
+      List quizResponsesFemale =
+          quizResponses.where((item) => item.gender == 'Female').toList();
+      returnedMap = {
+        'male': tabulateList(quizResponsesMale),
+        'female': tabulateList(quizResponsesFemale)
+      };
+    }
+    return returnedMap;
+  }
+
+  List<TabulatedResponse> tabulateList(listQuizResponses) {
     Map tabulatedScores = {};
-    for (QuizResponse response in quizResponses) {
+    for (QuizResponse response in listQuizResponses) {
       Map results = response.results;
       String answerType = results['outcome'];
       if (!tabulatedScores.containsKey(answerType)) {
