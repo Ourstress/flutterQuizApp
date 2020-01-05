@@ -116,9 +116,10 @@ List<charts.Series<TabulatedResponse, String>> _createChartData(data) {
       chartData.add(charts.Series<TabulatedResponse, String>(
         id: chartName,
         domainFn: (TabulatedResponse results, _) => results.type,
-        measureFn: (TabulatedResponse results, _) => results.count,
+        measureFn: (TabulatedResponse results, _) => results.values['count'],
         data: chartInfo,
-        labelAccessorFn: (TabulatedResponse results, _) => '${results.count}',
+        labelAccessorFn: (TabulatedResponse results, _) =>
+            '${results.values['count']}  -   ${(results.values['percentage'] * 100).toStringAsFixed(1)}%',
       )));
   return chartData;
 }
@@ -133,9 +134,9 @@ class QuizResponse {
 
 class TabulatedResponse {
   final String type;
-  final int count;
+  final Map values;
 
-  TabulatedResponse(this.type, this.count);
+  TabulatedResponse(this.type, this.values);
 }
 
 class ProcessQuiz {
@@ -179,14 +180,22 @@ class ProcessQuiz {
 
   List<TabulatedResponse> tabulateList(listQuizResponses) {
     Map tabulatedScores = {};
+    int totalCount = 0;
+
     for (QuizResponse response in listQuizResponses) {
       Map results = response.results;
       String answerType = results['outcome'];
       if (!tabulatedScores.containsKey(answerType)) {
-        tabulatedScores[answerType] = 0;
+        tabulatedScores[answerType] = {};
+        tabulatedScores[answerType]['count'] = 0;
       }
-      tabulatedScores[answerType] += 1;
+      tabulatedScores[answerType]['count'] += 1;
+      totalCount++;
     }
+    tabulatedScores.forEach((key, value) => tabulatedScores[key]['percentage'] =
+        tabulatedScores[key]['count'] / totalCount);
+    print('tabulatedScores');
+    print(tabulatedScores);
     return tabulatedScores.keys
         .map((key) => TabulatedResponse(key, tabulatedScores[key]))
         .toList();
