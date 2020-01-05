@@ -4,14 +4,19 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:provider/provider.dart';
 
 class SelectedCategory with ChangeNotifier {
-  String selectedCategory = 'all';
-  String get getSelectedCategory => selectedCategory;
-  void setSelectedCategory(int value) {
-    if (value == 1) {
-      selectedCategory = 'all';
-    } else if (value == 2) {
-      selectedCategory = 'gender';
-    }
+  String selectedGender = 'All';
+  String selectedSemester = 'All';
+
+  String get getSelectedGender => selectedGender;
+  String get getselectedSemester => selectedSemester;
+
+  void setSelectedGender(String value) {
+    selectedGender = value;
+    notifyListeners();
+  }
+
+  void setSelectedSemester(String value) {
+    selectedSemester = value;
     notifyListeners();
   }
 }
@@ -44,7 +49,7 @@ class ChartWidget extends StatelessWidget {
           flex: 1,
           child: Container(
               alignment: Alignment.center,
-              child: Text('Quiz responses',
+              child: Text('Quiz responses for ${quizInfo.quizTitle}',
                   style: Theme.of(context).textTheme.display1)),
         ),
         Flexible(
@@ -53,50 +58,37 @@ class ChartWidget extends StatelessWidget {
               children: <Widget>[
                 Flexible(
                   child: ListTile(
-                    leading: SizedBox(width: 100.0, child: DropdownSelect()),
-                    title: Text('Toggle fields'),
+                    leading: Text('Toggles fields:',
+                        style: Theme.of(context).textTheme.title),
+                    title: Wrap(
+                      spacing: 20.0,
+                      children: <Widget>[
+                        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                          Text('Gender:'),
+                          SizedBox(width: 15.0),
+                          SizedBox(width: 100.0, child: DropdownSelectGender()),
+                        ]),
+                        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                          Text('Semester'),
+                          SizedBox(width: 15.0),
+                          SizedBox(
+                              width: 170.0,
+                              child: DropdownSelectSemester(
+                                  quizResponses: quizInfo.quizResponses))
+                        ])
+                      ],
+                    ),
                   ),
                 ),
                 Flexible(
                   flex: 3,
                   child: _createBarChart(quizInfo.tabulateResponses(
+                      Provider.of<SelectedCategory>(context).getSelectedGender,
                       Provider.of<SelectedCategory>(context)
-                          .getSelectedCategory)),
+                          .getselectedSemester)),
                 )
               ],
             ))
-      ],
-    );
-  }
-}
-
-class DropdownSelect extends StatefulWidget {
-  DropdownSelectState createState() => DropdownSelectState();
-}
-
-class DropdownSelectState extends State<DropdownSelect> {
-  int selectedValue = 1;
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButtonFormField<int>(
-      onChanged: (value) => setState(() {
-        selectedValue = value;
-        Provider.of<SelectedCategory>(context, listen: false)
-            .setSelectedCategory(value);
-      }),
-      decoration: InputDecoration(
-          border: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white))),
-      value: selectedValue,
-      items: <DropdownMenuItem<int>>[
-        DropdownMenuItem<int>(
-          value: 1,
-          child: Text("All"),
-        ),
-        DropdownMenuItem<int>(
-          value: 2,
-          child: Text("By gender"),
-        ),
       ],
     );
   }
@@ -153,24 +145,35 @@ class ProcessQuiz {
 
   ProcessQuiz(this.quizInfo);
 
+  String get quizTitle => quizInfo['title'];
   List<QuizResponse> get quizResponses => quizInfo['responses']
       .values
       .map<QuizResponse>((elem) =>
           QuizResponse(elem['gender'], elem['results'], elem['createdAt']))
       .toList();
 
-  Map<String, List<TabulatedResponse>> tabulateResponses(selectedOption) {
+  // take out nan if we just want to compare between male/female
+  Map<String, List<TabulatedResponse>> tabulateResponses(
+      selectedGender, selectedSem) {
+    ProcessQuizResponses responseProcessor =
+        ProcessQuizResponses(quizResponses);
+    Map _semestersData = responseProcessor.semestersData();
+
     Map<String, List<TabulatedResponse>> returnedMap = {};
-    if (selectedOption == 'all') {
-      returnedMap = {selectedOption: tabulateList(quizResponses)};
-    } else if (selectedOption == 'gender') {
+    List _selectedSemData = _semestersData[selectedSem];
+    if (selectedGender == 'All') {
+      returnedMap = {selectedGender: tabulateList(_selectedSemData)};
+    } else if (selectedGender == 'Gender') {
       List quizResponsesMale =
-          quizResponses.where((item) => item.gender == 'Male').toList();
+          _selectedSemData.where((item) => item.gender == 'male').toList();
       List quizResponsesFemale =
-          quizResponses.where((item) => item.gender == 'Female').toList();
+          _selectedSemData.where((item) => item.gender == 'female').toList();
+      List quizResponsesNan =
+          _selectedSemData.where((item) => item.gender == 'nan').toList();
       returnedMap = {
         'male': tabulateList(quizResponsesMale),
-        'female': tabulateList(quizResponsesFemale)
+        'female': tabulateList(quizResponsesFemale),
+        'unspecified': tabulateList(quizResponsesNan)
       };
     }
     return returnedMap;
@@ -189,5 +192,105 @@ class ProcessQuiz {
     return tabulatedScores.keys
         .map((key) => TabulatedResponse(key, tabulatedScores[key]))
         .toList();
+  }
+}
+
+class DropdownSelectGender extends StatefulWidget {
+  DropdownSelectGenderState createState() => DropdownSelectGenderState();
+}
+
+class DropdownSelectGenderState extends State<DropdownSelectGender> {
+  String selectedValue = 'All';
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      onChanged: (value) => setState(() {
+        selectedValue = value;
+        Provider.of<SelectedCategory>(context, listen: false)
+            .setSelectedGender(value);
+      }),
+      decoration: InputDecoration(
+          border: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.white))),
+      value: selectedValue,
+      items: <DropdownMenuItem<String>>[
+        DropdownMenuItem<String>(
+          value: 'All',
+          child: Text("All"),
+        ),
+        DropdownMenuItem<String>(
+          value: 'Gender',
+          child: Text("By gender"),
+        ),
+      ],
+    );
+  }
+}
+
+class DropdownSelectSemester extends StatefulWidget {
+  final List<QuizResponse> quizResponses;
+  const DropdownSelectSemester({Key key, this.quizResponses}) : super(key: key);
+
+  DropdownSelectSemesterState createState() => DropdownSelectSemesterState();
+}
+
+class DropdownSelectSemesterState extends State<DropdownSelectSemester> {
+  String selectedValue = 'All';
+  Map semestersData = {};
+
+  void initState() {
+    ProcessQuizResponses responseProcessor =
+        ProcessQuizResponses(widget.quizResponses);
+    semestersData = responseProcessor.semestersData();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      onChanged: (value) => setState(() {
+        selectedValue = value;
+        Provider.of<SelectedCategory>(context, listen: false)
+            .setSelectedSemester(value);
+      }),
+      decoration: InputDecoration(
+          border: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.white))),
+      value: selectedValue,
+      items: [
+        for (int i = 0; i < semestersData.keys.length; i++)
+          DropdownMenuItem<String>(
+            value: semestersData.keys.elementAt(i),
+            child: Text(semestersData.keys.elementAt(i)),
+          )
+      ],
+    );
+  }
+}
+
+class ProcessQuizResponses {
+  ProcessQuizResponses(this.listQuizResponses);
+  final List<QuizResponse> listQuizResponses;
+
+  Map _sortIntoAcadSem() {
+    Map responsesBySem = {};
+    responsesBySem['All'] = listQuizResponses;
+    for (QuizResponse response in listQuizResponses) {
+      int responseYear = response.createdAt.year;
+      int responseMonth = response.createdAt.month;
+      String acadSem;
+      responseMonth > 6
+          ? acadSem = 'AY$responseYear-${responseYear + 1} sem1'
+          : acadSem = 'AY${responseYear - 1}-$responseYear sem2';
+      if (!responsesBySem.containsKey(acadSem)) {
+        responsesBySem[acadSem] = [];
+      }
+      responsesBySem[acadSem].add(response);
+    }
+    return responsesBySem;
+  }
+
+  Map semestersData() {
+    return _sortIntoAcadSem();
   }
 }
