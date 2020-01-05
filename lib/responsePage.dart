@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'appBar.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:provider/provider.dart';
+import 'package:csv/csv.dart';
+import 'dart:html' as html;
 
 class SelectedCategory with ChangeNotifier {
   String selectedGender = 'All';
@@ -58,6 +60,7 @@ class ChartWidget extends StatelessWidget {
               children: <Widget>[
                 Flexible(
                   child: ListTile(
+                    trailing: ExportToCsv(),
                     leading: Text('Settings:',
                         style: Theme.of(context).textTheme.title),
                     title: Wrap(
@@ -299,5 +302,27 @@ class ProcessQuizResponses {
 
   Map semestersData() {
     return _sortIntoAcadSem();
+  }
+}
+
+// Impt reference - https://dartpad.dartlang.org/9d80ba77bad1fff67c9bd5a80414d256
+class ExportToCsv extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: FlatButton(
+          child: Text('Export to CSV'),
+          onPressed: () {
+            var csv = Uri.encodeComponent(ListToCsvConverter().convert([
+              [',b', 3.1, 42],
+              ['n\n']
+            ]));
+            var a = html.document.createElement('a');
+            a
+              ..setAttribute('href', "data:text/plain;charset=utf-8,$csv")
+              ..setAttribute('download', 'text.csv')
+              ..click();
+          }),
+    );
   }
 }
