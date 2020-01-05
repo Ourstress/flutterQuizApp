@@ -58,7 +58,7 @@ class ChartWidget extends StatelessWidget {
               children: <Widget>[
                 Flexible(
                   child: ListTile(
-                    leading: Text('Toggles fields:',
+                    leading: Text('Settings:',
                         style: Theme.of(context).textTheme.title),
                     title: Wrap(
                       spacing: 20.0,
@@ -97,19 +97,18 @@ class ChartWidget extends StatelessWidget {
 charts.BarChart _createBarChart(data) => charts.BarChart(
       _createChartData(data),
       animate: false,
+      vertical: false,
+      behaviors: [charts.SeriesLegend()],
       barGroupingType: charts.BarGroupingType.grouped,
-      primaryMeasureAxis: charts.NumericAxisSpec(
-          tickProviderSpec:
-              charts.BasicNumericTickProviderSpec(desiredTickCount: 3)),
-      secondaryMeasureAxis: charts.NumericAxisSpec(
-          tickProviderSpec:
-              charts.BasicNumericTickProviderSpec(desiredTickCount: 3)),
+      barRendererDecorator: charts.BarLabelDecorator(
+        labelPosition: charts.BarLabelPosition.auto,
+        insideLabelStyleSpec: charts.TextStyleSpec(fontSize: 20),
+        outsideLabelStyleSpec: charts.TextStyleSpec(fontSize: 20),
+      ),
+      domainAxis: charts.OrdinalAxisSpec(
+          renderSpec: charts.SmallTickRendererSpec(
+              labelStyle: charts.TextStyleSpec(fontSize: 20))),
     );
-
-// charts.PieChart _createPieChart(data) => charts.PieChart(_createChartData(data),
-//     animate: false,
-//     defaultRenderer: new charts.ArcRendererConfig(
-//         arcWidth: 60, arcRendererDecorators: [charts.ArcLabelDecorator()]));
 
 List<charts.Series<TabulatedResponse, String>> _createChartData(data) {
   List<charts.Series<TabulatedResponse, String>> chartData = [];
@@ -119,8 +118,7 @@ List<charts.Series<TabulatedResponse, String>> _createChartData(data) {
         domainFn: (TabulatedResponse results, _) => results.type,
         measureFn: (TabulatedResponse results, _) => results.count,
         data: chartInfo,
-        labelAccessorFn: (TabulatedResponse results, _) =>
-            '${results.type}: ${results.count}',
+        labelAccessorFn: (TabulatedResponse results, _) => '${results.count}',
       )));
   return chartData;
 }
