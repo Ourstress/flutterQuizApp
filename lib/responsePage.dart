@@ -60,12 +60,13 @@ class ChartWidget extends StatelessWidget {
               children: <Widget>[
                 Flexible(
                   child: ListTile(
-                    trailing: ExportToCsv(),
-                    leading: Text('Settings:',
-                        style: Theme.of(context).textTheme.title),
+                    trailing: ExportToCsv(quizInfo: quizInfo),
                     title: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 20.0,
                       children: <Widget>[
+                        Text('Settings:',
+                            style: Theme.of(context).textTheme.title),
                         Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           Text('Gender:'),
                           SizedBox(width: 15.0),
@@ -197,11 +198,30 @@ class ProcessQuiz {
     }
     tabulatedScores.forEach((key, value) => tabulatedScores[key]['percentage'] =
         tabulatedScores[key]['count'] / totalCount);
-    print('tabulatedScores');
-    print(tabulatedScores);
     return tabulatedScores.keys
         .map((key) => TabulatedResponse(key, tabulatedScores[key]))
         .toList();
+  }
+
+  List<List> csvDataForExport() {
+    Iterable scoreElements =
+        quizInfo['responses'].values.first.values.elementAt(2)['scores'].keys;
+    List<List> csvList = [
+      ['email', 'gender', 'date-completed', 'quiz-outcome']
+    ];
+    scoreElements.forEach((element) => csvList[0].add(element));
+    quizInfo['responses'].forEach((key, value) {
+      List row = [
+        key,
+        value['gender'],
+        value['createdAt'],
+        value['results']['outcome']
+      ];
+      Map scores = value['results']['scores'];
+      scoreElements.forEach((element) => row.add(scores[element]));
+      csvList.add(row);
+    });
+    return csvList;
   }
 }
 
@@ -306,17 +326,20 @@ class ProcessQuizResponses {
 }
 
 // Impt reference - https://dartpad.dartlang.org/9d80ba77bad1fff67c9bd5a80414d256
+// Impt reference - https://gist.github.com/ykmnkmi/b9e3e7997f9551fcaa1b3deebf8abceb
 class ExportToCsv extends StatelessWidget {
+  final ProcessQuiz quizInfo;
+
+  const ExportToCsv({Key key, this.quizInfo}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       child: FlatButton(
           child: Text('Export to CSV'),
           onPressed: () {
-            var csv = Uri.encodeComponent(ListToCsvConverter().convert([
-              [',b', 3.1, 42],
-              ['n\n']
-            ]));
+            var csv = Uri.encodeComponent(
+                ListToCsvConverter().convert(quizInfo.csvDataForExport()));
             var a = html.document.createElement('a');
             a
               ..setAttribute('href', "data:text/plain;charset=utf-8,$csv")
