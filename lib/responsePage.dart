@@ -8,9 +8,11 @@ import 'dart:html' as html;
 class SelectedCategory with ChangeNotifier {
   String selectedGender = 'All';
   String selectedSemester = 'All';
+  String selectedMeasure = 'count';
 
   String get getSelectedGender => selectedGender;
   String get getselectedSemester => selectedSemester;
+  String get getSelectedMeasure => selectedMeasure;
 
   void setSelectedGender(String value) {
     selectedGender = value;
@@ -19,6 +21,11 @@ class SelectedCategory with ChangeNotifier {
 
   void setSelectedSemester(String value) {
     selectedSemester = value;
+    notifyListeners();
+  }
+
+  void setSelectedMeasure(String value) {
+    selectedMeasure = value;
     notifyListeners();
   }
 }
@@ -79,6 +86,11 @@ class ChartWidget extends StatelessWidget {
                               width: 170.0,
                               child: DropdownSelectSemester(
                                   quizResponses: quizInfo.quizResponses))
+                        ]),
+                        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                          Text('Measure'),
+                          SizedBox(width: 15.0),
+                          SizedBox(width: 170.0, child: DropdownSelectMeasure())
                         ])
                       ],
                     ),
@@ -86,10 +98,13 @@ class ChartWidget extends StatelessWidget {
                 ),
                 Flexible(
                   flex: 3,
-                  child: _createBarChart(quizInfo.tabulateResponses(
-                      Provider.of<SelectedCategory>(context).getSelectedGender,
-                      Provider.of<SelectedCategory>(context)
-                          .getselectedSemester)),
+                  child: _createBarChart(
+                      quizInfo.tabulateResponses(
+                          Provider.of<SelectedCategory>(context)
+                              .getSelectedGender,
+                          Provider.of<SelectedCategory>(context)
+                              .getselectedSemester),
+                      context),
                 )
               ],
             ))
@@ -98,8 +113,8 @@ class ChartWidget extends StatelessWidget {
   }
 }
 
-charts.BarChart _createBarChart(data) => charts.BarChart(
-      _createChartData(data),
+charts.BarChart _createBarChart(data, context) => charts.BarChart(
+      _createChartData(data, context),
       animate: false,
       vertical: false,
       behaviors: [charts.SeriesLegend()],
@@ -114,16 +129,19 @@ charts.BarChart _createBarChart(data) => charts.BarChart(
               labelStyle: charts.TextStyleSpec(fontSize: 20))),
     );
 
-List<charts.Series<TabulatedResponse, String>> _createChartData(data) {
+List<charts.Series<TabulatedResponse, String>> _createChartData(data, context) {
+  String selectedMeasure =
+      Provider.of<SelectedCategory>(context).getSelectedMeasure;
   List<charts.Series<TabulatedResponse, String>> chartData = [];
   data.forEach((String chartName, List<TabulatedResponse> chartInfo) =>
       chartData.add(charts.Series<TabulatedResponse, String>(
         id: chartName,
         domainFn: (TabulatedResponse results, _) => results.type,
-        measureFn: (TabulatedResponse results, _) => results.values['count'],
+        measureFn: (TabulatedResponse results, _) =>
+            results.values[selectedMeasure],
         data: chartInfo,
         labelAccessorFn: (TabulatedResponse results, _) =>
-            '${results.values['count']}  -   ${(results.values['percentage'] * 100).toStringAsFixed(1)}%',
+            '${results.values[selectedMeasure]}  -   ${(results.values['percentage'] * 100).toStringAsFixed(1)}%',
       )));
   return chartData;
 }
@@ -188,16 +206,26 @@ class ProcessQuiz {
 
     for (QuizResponse response in listQuizResponses) {
       Map results = response.results;
-      String answerType = results['outcome'];
+      results['scores'] = results['scores']
+          .map((key, value) => MapEntry(key.toLowerCase(), value));
+      String answerType = results['outcome'].toLowerCase();
+      int answerTypeScore = results['scores'][answerType];
       if (!tabulatedScores.containsKey(answerType)) {
         tabulatedScores[answerType] = {};
         tabulatedScores[answerType]['count'] = 0;
+        tabulatedScores[answerType]['totalScore'] = 0;
       }
       tabulatedScores[answerType]['count'] += 1;
+      tabulatedScores[answerType]['totalScore'] += answerTypeScore;
       totalCount++;
     }
-    tabulatedScores.forEach((key, value) => tabulatedScores[key]['percentage'] =
-        tabulatedScores[key]['count'] / totalCount);
+    tabulatedScores.forEach((key, value) {
+      tabulatedScores[key]['percentage'] =
+          tabulatedScores[key]['count'] / totalCount;
+      tabulatedScores[key]['averageScore'] = num.parse(
+          (tabulatedScores[key]['totalScore'] / tabulatedScores[key]['count'])
+              .toStringAsFixed(1));
+    });
     return tabulatedScores.keys
         .map((key) => TabulatedResponse(key, tabulatedScores[key]))
         .toList();
@@ -293,6 +321,39 @@ class DropdownSelectSemesterState extends State<DropdownSelectSemester> {
             value: semestersData.keys.elementAt(i),
             child: Text(semestersData.keys.elementAt(i)),
           )
+      ],
+    );
+  }
+}
+
+class DropdownSelectMeasure extends StatefulWidget {
+  DropdownSelectMeasureState createState() => DropdownSelectMeasureState();
+}
+
+class DropdownSelectMeasureState extends State<DropdownSelectMeasure> {
+  String selectedValue = 'count';
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      onChanged: (value) => setState(() {
+        selectedValue = value;
+        Provider.of<SelectedCategory>(context, listen: false)
+            .setSelectedMeasure(value);
+      }),
+      decoration: InputDecoration(
+          border: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.white))),
+      value: selectedValue,
+      items: [
+        DropdownMenuItem<String>(
+          value: 'count',
+          child: Text('Count'),
+        ),
+        DropdownMenuItem<String>(
+          value: 'averageScore',
+          child: Text('Average Score'),
+        )
       ],
     );
   }
