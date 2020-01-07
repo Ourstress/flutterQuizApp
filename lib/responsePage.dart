@@ -52,62 +52,76 @@ class ChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints viewportConstraints) {
+      return SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
+          child: IntrinsicHeight(
+              child: Column(
+            children: <Widget>[
+              Flexible(
+                flex: 1,
+                child: Container(
+                    alignment: Alignment.center,
+                    child: Text('Quiz responses for ${quizInfo.quizTitle}',
+                        style: Theme.of(context).textTheme.display1)),
+              ),
+              Flexible(
+                  flex: 5,
+                  child: Column(
+                    children: <Widget>[
+                      Flexible(
+                        child: ListTile(
+                          title: SettingsWrapWidget(quizInfo: quizInfo),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 5,
+                        child: _createBarChart(
+                            quizInfo.tabulateResponses(
+                                Provider.of<SelectedCategory>(context)
+                                    .getSelectedGender,
+                                Provider.of<SelectedCategory>(context)
+                                    .getselectedSemester),
+                            context),
+                      )
+                    ],
+                  ))
+            ],
+          )));
+    });
+  }
+}
+
+class SettingsWrapWidget extends StatelessWidget {
+  final ProcessQuiz quizInfo;
+  const SettingsWrapWidget({Key key, this.quizInfo}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 20.0,
       children: <Widget>[
-        Flexible(
-          flex: 1,
-          child: Container(
-              alignment: Alignment.center,
-              child: Text('Quiz responses for ${quizInfo.quizTitle}',
-                  style: Theme.of(context).textTheme.display1)),
-        ),
-        Flexible(
-            flex: 4,
-            child: Column(
-              children: <Widget>[
-                Flexible(
-                  child: ListTile(
-                    trailing: ExportToCsv(quizInfo: quizInfo),
-                    title: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: 20.0,
-                      children: <Widget>[
-                        Text('Settings:',
-                            style: Theme.of(context).textTheme.title),
-                        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                          Text('Gender:'),
-                          SizedBox(width: 15.0),
-                          SizedBox(width: 100.0, child: DropdownSelectGender()),
-                        ]),
-                        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                          Text('Semester'),
-                          SizedBox(width: 15.0),
-                          SizedBox(
-                              width: 170.0,
-                              child: DropdownSelectSemester(
-                                  quizResponses: quizInfo.quizResponses))
-                        ]),
-                        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                          Text('Measure'),
-                          SizedBox(width: 15.0),
-                          SizedBox(width: 170.0, child: DropdownSelectMeasure())
-                        ])
-                      ],
-                    ),
-                  ),
-                ),
-                Flexible(
-                  flex: 3,
-                  child: _createBarChart(
-                      quizInfo.tabulateResponses(
-                          Provider.of<SelectedCategory>(context)
-                              .getSelectedGender,
-                          Provider.of<SelectedCategory>(context)
-                              .getselectedSemester),
-                      context),
-                )
-              ],
-            ))
+        Text('Settings:', style: Theme.of(context).textTheme.title),
+        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          Text('Gender:', style: Theme.of(context).textTheme.subhead),
+          SizedBox(width: 30.0),
+          SizedBox(width: 100.0, child: DropdownSelectGender()),
+        ]),
+        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          Text('Semester', style: Theme.of(context).textTheme.subhead),
+          SizedBox(width: 30.0),
+          SizedBox(
+              width: 170.0,
+              child:
+                  DropdownSelectSemester(quizResponses: quizInfo.quizResponses))
+        ]),
+        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          Text('Measure', style: Theme.of(context).textTheme.subhead),
+          SizedBox(width: 30.0),
+          SizedBox(width: 170.0, child: DropdownSelectMeasure())
+        ]),
+        ExportToCsv(quizInfo: quizInfo)
       ],
     );
   }
