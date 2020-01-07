@@ -30,18 +30,6 @@ showAlertDialog(BuildContext context, String type,
           ],
         );
       }
-      if (type == 'editQuiz') {
-        var linkFirestore = Provider.of<Fs>(context);
-        return ChangeNotifierProvider.value(
-            value: linkFirestore,
-            child: AlertDialog(
-              content:
-                  QuizEditMode(key: UniqueKey(), quizQuestionInfo: mapProps),
-              actions: [
-                OkButton(),
-              ],
-            ));
-      }
       return Container();
     },
   );

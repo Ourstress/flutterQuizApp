@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz/quizCard.dart';
+import 'package:quiz/quizEdit.dart';
 import 'appBar.dart';
 import 'package:firebase/firebase.dart' as fb;
 import 'secrets.dart';
@@ -71,13 +72,27 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var linkFirestore = Provider.of<Fs>(context);
     return Scaffold(
         appBar: myAppBar(),
         body: siteLandingView(context),
         floatingActionButton: Provider.of<Fa>(context).getUser != null
             ? FloatingActionButton(
                 onPressed: () {
-                  showAlertDialog(context, 'editQuiz', mapProps: {});
+                  showDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (BuildContext context) {
+                        return ChangeNotifierProvider.value(
+                            value: linkFirestore,
+                            child: AlertDialog(
+                              content: QuizEditMode(
+                                  key: UniqueKey(), quizQuestionInfo: {}),
+                              actions: [
+                                OkButton(),
+                              ],
+                            ));
+                      });
                 },
                 tooltip: 'Add new quiz',
                 child: Icon(Icons.add),
