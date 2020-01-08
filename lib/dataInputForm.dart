@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'firebaseModel.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz/showAlertDialog.dart';
+import 'package:http/http.dart' as http;
 
 class EmailGenderForm extends StatefulWidget {
   const EmailGenderForm({Key key, this.quizId, this.quizResults})
@@ -75,7 +76,7 @@ class EmailGenderFormState extends State<EmailGenderForm> {
           Flexible(
               child: RaisedButton(
                   child: Text('Submit'),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
 
@@ -91,6 +92,16 @@ class EmailGenderFormState extends State<EmailGenderForm> {
                       showAlertDialog(context, 'alert',
                           stringProps:
                               '$_results\n\nYour response has been submitted and your results will be emailed to you shortly');
+                      String bodyContents = {
+                        'email': _email,
+                        'results': widget.quizResults
+                      }.toString();
+                      await http.post(
+                          'https://zodaq8dldg.execute-api.us-east-1.amazonaws.com/Prod/',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: bodyContents);
                     }
                   }))
         ]));

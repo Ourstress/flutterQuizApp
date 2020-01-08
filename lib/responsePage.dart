@@ -201,15 +201,16 @@ class ProcessQuiz {
     } else if (selectedGender == 'Gender') {
       List quizResponsesMale =
           _selectedSemData.where((item) => item.gender == 'male').toList();
+      if (quizResponsesMale.isNotEmpty)
+        returnedMap['male'] = tabulateList(quizResponsesMale);
       List quizResponsesFemale =
           _selectedSemData.where((item) => item.gender == 'female').toList();
+      if (quizResponsesMale.isNotEmpty)
+        returnedMap['female'] = tabulateList(quizResponsesFemale);
       List quizResponsesNan =
           _selectedSemData.where((item) => item.gender == 'nan').toList();
-      returnedMap = {
-        'male': tabulateList(quizResponsesMale),
-        'female': tabulateList(quizResponsesFemale),
-        'unspecified': tabulateList(quizResponsesNan)
-      };
+      if (quizResponsesMale.isNotEmpty)
+        returnedMap['unspecified'] = tabulateList(quizResponsesNan);
     }
     return returnedMap;
   }

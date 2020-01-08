@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:quiz/quizEdit.dart';
-import 'firebaseModel.dart';
-import 'package:provider/provider.dart';
 
 class OkButton extends StatelessWidget {
   @override
